@@ -1,0 +1,29 @@
+package controller.sql;
+
+import model.tableSql.TableDeclaration;
+
+public class GeneratorTable {
+
+	public static boolean generate(Connexion connexion){
+		try {
+			connexion.connect();
+			connexion.getStatement().execute(TableDeclaration.ESPECES_VEGETALES);
+			connexion.getStatement().execute(TableDeclaration.ZONE);
+			connexion.getStatement().execute(TableDeclaration.VEGETAUX);
+			connexion.getStatement().execute(TableDeclaration.CONTIENT_VEGETAUX);
+			connexion.getStatement().execute(TableDeclaration.CAPTEUR);
+			connexion.getStatement().execute(TableDeclaration.DONNEE_CAPTEUR_ATTENDU);
+			connexion.getStatement().execute(TableDeclaration.DONNEE_CAPTEUR_RECU);
+			connexion.getStatement().execute(TableDeclaration.TYPE_ALERTE);
+			connexion.getStatement().execute(TableDeclaration.ALERTE);
+			connexion.getStatement().execute(TableDeclaration.PERSONNE_RESPONSABLE);
+			connexion.getStatement().execute(TableDeclaration.ENVOIE);
+			connexion.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		return true;
+	}
+}
