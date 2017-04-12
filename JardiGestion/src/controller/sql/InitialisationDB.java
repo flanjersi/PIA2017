@@ -10,12 +10,6 @@ public class InitialisationDB {
 		queries = new Queries(con);
 	}
 	
-	private void generateZone(){
-		queries.addZone("zone1");
-		queries.addZone("zone2");
-		queries.addZone("zone3");
-	}
-	
 	private void genereSensors(){
 		queries.addSensor("temperature");
 		queries.addSensor("humidite");
@@ -26,6 +20,5 @@ public class InitialisationDB {
 	
 	public void execute(){
 		genereSensors();
-		generateZone();
 	}
 }

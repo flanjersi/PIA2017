@@ -1,12 +1,12 @@
 package controller.javafx;
 
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+
 import application.MainFrame;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -18,48 +18,49 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import model.Zone;
 
-public class ZonesManagementController implements Initializable{
+public class ZonesAnalyseController implements Initializable{
 
-	
 	@FXML
 	TabPane tabPane;
 	
 	private MainFrame mainApp;
-	private List<ZoneManagementController> listZoneManagementController;
-	private ZoneManagementController controller;
+	
+	private List<ZoneAnalyseController> listZoneAnalyseController;
+	private ZoneAnalyseController controller;
 	private Map<String, Integer> mappedTab;
 	
 	int selectedZone = 0;
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		listZoneAnalyseController = new ArrayList<>();
 		mappedTab = new HashMap<>();
-		listZoneManagementController = new ArrayList<>();
 		
 		tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
 
 			@Override
 			public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
 				selectedZone = getIndexZone(newValue.getText());
-				controller = listZoneManagementController.get(selectedZone);
+				controller = listZoneAnalyseController.get(selectedZone);
 			}
 		});
+		
 	}
 	
 	public void addPane(Zone zone){
 		try {
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainFrame.class.getResource("../view/fxml/ZoneManagement.fxml"));
-			AnchorPane zoneManagement = (AnchorPane) loader.load();
+			loader.setLocation(MainFrame.class.getResource("../view/fxml/ZoneAnalyse.fxml"));
+			AnchorPane zoneAnalyse = (AnchorPane) loader.load();
 			
 			controller = loader.getController();
 			controller.setMainApp(mainApp);
-			listZoneManagementController.add(controller);
-			mappedTab.put(zone.getName(), listZoneManagementController.size() - 1);
+			listZoneAnalyseController.add(controller);
+			mappedTab.put(zone.getName(), listZoneAnalyseController.size() - 1);
 			
 			Tab tab = new Tab();
 			tab.setText(zone.getName());
-			tab.setContent(zoneManagement);
+			tab.setContent(zoneAnalyse);
 			tabPane.getTabs().add(tab);
 			
 		} catch (Exception e) {
@@ -67,7 +68,10 @@ public class ZonesManagementController implements Initializable{
 		}
 	}
 	
-
+	public ZoneAnalyseController getSelectedController(){
+		return listZoneAnalyseController.get(getSelectedIndexZone());
+	}
+	
 	public void setMainApp(MainFrame mainApp){
 		this.mainApp = mainApp;
 	}
@@ -83,11 +87,5 @@ public class ZonesManagementController implements Initializable{
 	public int getSelectedIndexZone(){
 		return selectedZone;
 	}
-	
-	public ZoneManagementController getSelectedController(){
-		return listZoneManagementController.get(getSelectedIndexZone());
-	}
-	
-	
 
 }

@@ -1,6 +1,8 @@
 package controller.javafx;
 
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import application.MainFrame;
@@ -17,6 +19,10 @@ public class HomeController implements Initializable{
 	
 	@FXML
 	Button buttonGestion;
+	
+	@FXML
+	Button buttonConfiguration;
+	
 	
 	private MainFrame mainApp;
 	
@@ -37,6 +43,15 @@ public class HomeController implements Initializable{
 				mainApp.showZonesManagementController();
 			}
 		});	
+		
+		buttonConfiguration.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				mainApp.showConfiguration();
+			}
+		});	
+				
 	}
 	
 	public void setMainApp(MainFrame mainApp){

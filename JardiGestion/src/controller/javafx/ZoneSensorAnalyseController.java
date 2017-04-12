@@ -1,11 +1,13 @@
 package controller.javafx;
 
 import java.net.URL;
-import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.naming.spi.InitialContextFactory;
 
 import application.MainFrame;
 import javafx.beans.value.ChangeListener;
@@ -24,16 +26,16 @@ import javafx.scene.control.TextField;
 import model.DataFromSensor;
 import model.Zone;
 
-public class ZoneSensorManagementController implements Initializable{
-
+public class ZoneSensorAnalyseController implements Initializable{
+	
 	@FXML
 	LineChart<Integer, Integer> lineChartValues;
 	
 	@FXML
-	private NumberAxis xAxis;
+	NumberAxis xAxis;
 	
 	@FXML
-	private NumberAxis yAxis;
+	NumberAxis yAxis;
 	
 	@FXML
 	Slider sliderLineChart;
@@ -56,31 +58,23 @@ public class ZoneSensorManagementController implements Initializable{
 	@FXML
 	TextField secondLast;
 	
-	
 	@FXML
 	DatePicker datePickerBegin;
-	
-	
-	@FXML
-	DatePicker datePickerLast;
-	
-	@FXML
-	TextField expectedValue;
-	
-	@FXML
-	TextField marginValue;
 	
 	@FXML
 	Button validateButton;
 	
+	@FXML
+	DatePicker datePickerLast;
 	
-	private MainFrame mainApp;
 	private TreeMap<Integer, DataFromSensor> listData;
 	
 	private Pattern pattern;
 	private Matcher matcher;
 	
 	private int indexSensor;
+	
+	private MainFrame mainApp;
 	
 	public boolean datePickerValid(){
 		return datePickerBegin.getValue() != null && datePickerLast.getValue() != null;
@@ -207,34 +201,6 @@ public class ZoneSensorManagementController implements Initializable{
 		});
 	}
 	
-	public void eventValuesInput(){
-		marginValue.textProperty().addListener(new ChangeListener<String>() {
-
-			@Override
-			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				pattern = Pattern.compile("([0-9]+|^$)");
-				matcher = pattern.matcher(newValue);
-				
-				if(!matcher.matches()){
-					marginValue.setText(oldValue);
-				}
-			}
-		});
-		
-		expectedValue.textProperty().addListener(new ChangeListener<String>() {
-
-			@Override
-			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				pattern = Pattern.compile("(-?[0-9]*)|^$");
-				matcher = pattern.matcher(newValue);
-				
-				if(!matcher.matches()){
-					expectedValue.setText(oldValue);
-				}
-			}
-		});
-	}
-	
 	public void eventButton(){
 		validateButton.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -248,31 +214,7 @@ public class ZoneSensorManagementController implements Initializable{
 						validateButton.setStyle("-fx-text-fill: red");
 					}
 					else{
-						if(marginValue.getText().length() > 0 && expectedValue.getText().length() > 0){
-							int indexZone = mainApp.getZonesManagement().selectedZone;
-							Zone zone = mainApp.getBotanicalPark().getZones().get(indexZone);
-							
-							
-							
-							DataFromSensor data = new DataFromSensor(Integer.valueOf(expectedValue.getText()), (int)epochBegin, Integer.valueOf(marginValue.getText()));
-							
-							zone.addDataSensorExpected(indexSensor, data);
-							mainApp.getQueries().addDataSensorExpected(indexZone + 1, data.getDonnee(), data.getDateDonnee(), indexSensor + 1, data.getMarge());
-							
-
-							data = new DataFromSensor(Integer.valueOf(expectedValue.getText()), (int)epochLast, Integer.valueOf(marginValue.getText()));
-							
-							
-							zone.addDataSensorExpected(indexSensor, data);
-							mainApp.getQueries().addDataSensorExpected(indexZone + 1, data.getDonnee(), data.getDateDonnee(), indexSensor + 1, data.getMarge());
-							
-							eventAxis();
-							
-							validateButton.setStyle("-fx-text-fill: green");
-						}
-						else{
-							validateButton.setStyle("-fx-text-fill: red");
-						}
+						
 					}
 				}
 			}
@@ -309,20 +251,21 @@ public class ZoneSensorManagementController implements Initializable{
 		lineChartValues.getData().add(marginMinusSeries);	
 	}
 
+	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		eventTimeBegin();
 		eventTimeEnd();
-		eventValuesInput();
 		eventButton();
-	}
-
-	public void setIndexSensor(int indexSensor){
-		this.indexSensor = indexSensor;
+		
 	}
 	
 	public void setMainApp(MainFrame mainApp){
 		this.mainApp = mainApp;
+	}
+	
+	public void setIndexSensor(int indexSensor){
+		this.indexSensor = indexSensor;
 	}
 	
 	public void setListDataSensor(TreeMap<Integer, DataFromSensor> list){
@@ -330,5 +273,5 @@ public class ZoneSensorManagementController implements Initializable{
 		
 		eventAxis();
 	}
-	
+
 }

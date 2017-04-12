@@ -1,8 +1,13 @@
 package model;
 
+import controller.sql.Connexion;
+import controller.sql.Queries;
+
 public class VegetableSpecie {
 	private String name;
 	private String description;
+	
+	private Queries queries;
 	
 	public VegetableSpecie(String name, String description) {
 		this.name = name;
@@ -20,4 +25,9 @@ public class VegetableSpecie {
 	public boolean equals(VegetableSpecie other){
 		return name.equals(other.getName());
 	}
+	
+	public void setQueries(Connexion connexion){
+		this.queries = new Queries(connexion);
+	}
+	
 }
