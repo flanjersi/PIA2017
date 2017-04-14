@@ -32,7 +32,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import model.ResponsiblePerson;
 import model.TypeAlert;
+import model.Vegetable;
+import model.VegetableSpecie;
 import model.Zone;
+import model.ZoneTypeAlert;
 
 public class ConfigurationController implements Initializable{
 
@@ -74,6 +77,19 @@ public class ConfigurationController implements Initializable{
 	@FXML
 	Button zoneRPDeletedButton;
 	
+	@FXML
+	ChoiceBox<String> choiceBoxVegetalZone;
+	
+	@FXML
+	ListView<String> listVegetalZone;
+	
+	@FXML
+	Button zoneVegetableValidateButton;
+	
+	@FXML
+	Button zoneVegetableDeletedButton;
+	
+	
 	/**
 	 * Tab Personnes Responsables
 	 */
@@ -110,10 +126,25 @@ public class ConfigurationController implements Initializable{
 	 * Vegetaux
 	 */
 	@FXML
-	TableView<ResponsiblePerson> tableViewVegetablesSpecies;
+	TableView<VegetableSpecie> tableViewVegetablesSpecies;
 	
 	@FXML
-	TableView<ResponsiblePerson> tableViewVegetables;
+	TableColumn<VegetableSpecie, String> tableColumnNameVegetablesSpecies;
+	
+	@FXML
+	TableColumn<VegetableSpecie, String> tableColumnDescriptionVegetablesSpecies;
+
+	@FXML
+	TableView<Vegetable> tableViewVegetables;
+	
+	@FXML
+	TableColumn<Vegetable, String> tableColumnNameVegetables;
+	
+	@FXML
+	TableColumn<Vegetable, String> tableColumnNameSpecieVegetables;
+	
+	@FXML
+	TableColumn<Vegetable, String> tableColumnDescriptionVegetables;
 	
 	@FXML
 	TextField nameVegetableSpecie;
@@ -146,10 +177,31 @@ public class ConfigurationController implements Initializable{
 	 * Type d'alerte
 	 */
 	@FXML
+	TableView<ZoneTypeAlert> tableViewTypeAlertsInZone;
+	
+	@FXML
+	TableColumn<ZoneTypeAlert, String> tableColumnNameZoneTypeAlert;
+	
+	@FXML
+	TableColumn<ZoneTypeAlert, Number> tableColumnIdTypeAlertZone;
+   
+	@FXML
+	ChoiceBox<String> choiceBoxZonesTypeAlert;
+	
+	@FXML
+	ChoiceBox<String> choiceBoxSensorForZone;
+	
+	@FXML
+	Button deletedtypeAlertInZoneButton;
+	
+	@FXML
+	Button validateTypeAlertInZoneButton;
+	
+	@FXML
 	TableView<TypeAlert> tableViewTypeAlerts;
 	
 	@FXML
-	ChoiceBox<String> choiceBoxZones;
+	ChoiceBox<String> choiceBoxIdTypeAlerts;
 	
 	@FXML
 	ChoiceBox<String> choiceBoxSensor;
@@ -163,6 +215,25 @@ public class ConfigurationController implements Initializable{
 	@FXML
 	TextArea messageAlertTextField;
 	
+	@FXML
+	TableColumn<TypeAlert, Number> tableColumnIdTypeAlert;
+	
+	@FXML
+	TableColumn<TypeAlert, String> tableColumnSensorTypeAlert;
+    
+	@FXML
+	TableColumn<TypeAlert, Boolean> tableColumnCondAlert;
+	
+	@FXML
+	TableColumn<TypeAlert, String> tableColumnMessageAlert;
+	
+	@FXML
+	Button deletedtypeAlertButton;
+	
+	
+	@FXML
+	Button validateTypeAlertButton;
+	
 	
 	private MainFrame mainApp;
 	
@@ -170,27 +241,22 @@ public class ConfigurationController implements Initializable{
 	
 	private String nameZoneSelected = null;
 	private int indexListResponsiblePeopleSelected = -1;
+	private int indexTableViewVegetalSpecie = -1;
+	private int indexTableViewVegetal = -1;
+	
 	
 	private Pattern pattern;
 	private Matcher matcher;
 	
-	public boolean inputZonesIsValid(){
+	private boolean inputZonesIsValid(){
 		return nameZoneField.getText().length() != 0;
 	}
-//	@FXML
-//	ChoiceBox<String> choiceBoxRPZone;
-//	
-//	@FXML
-//	ListView<String> listRPZone;
-//	
-//	@FXML
-//	Button zoneRPValidateButton;
-//	
-//	@FXML
-//	Button zoneRPDeletedButton;
+
 	
-	
-	public void initializeZones(){
+	/**
+	 * Initialise le tab Zone
+	 */
+	private void initializeZones(){
 		mappedZonesParc = new HashMap<>();
 		zoneValidateButton.setText("Ajouter");
 		zoneDeletedButton.setVisible(false);
@@ -204,6 +270,7 @@ public class ConfigurationController implements Initializable{
 				zoneDeletedButton.setStyle("-fx-text-fill: black");
 				infoUpdate.setText("");
 				listRPZone.getItems().clear();
+				listVegetalZone.getItems().clear();
 				
 				if(newValue.equals("ajouter")){
 					zoneValidateButton.setText("Ajouter");
@@ -216,12 +283,16 @@ public class ConfigurationController implements Initializable{
 					zoneDeletedButton.setVisible(true);
 					Zone zone = mappedZonesParc.get(newValue);
 					nameZoneField.setText(zone.getName());
-					descriptionZoneTextField.setText(zone.getDescription());	
+					descriptionZoneTextField.setText(zone.getDescription());
+
+					listVegetalZone.getItems().clear();
+					listVegetalZone.getItems().addAll(zone.getAllVegetableStringWithSpecie());
 					
 					for(ResponsiblePerson rps : zone.getResponsiblesPerson()){
 						listRPZone.getItems().add(rps.getEmail());
 					}
-				
+					
+					
 				}
 				
 				
@@ -243,6 +314,10 @@ public class ConfigurationController implements Initializable{
 									zone.addResponsiblePerson(mainApp.getBotanicalPark().getResponsiblePerson(emailPerson));
 								}
 								
+								for(String nameVegetalWithSpecie : listVegetalZone.getItems()){
+									String[] split = nameVegetalWithSpecie.split(",");
+									zone.addVegetable(mainApp.getBotanicalPark().getVegetable(split[0], split[1]));
+								}
 								
 								listZones.getItems().add(zone.getName());
 								mappedZonesParc.put(zone.getName(), zone);							
@@ -270,6 +345,13 @@ public class ConfigurationController implements Initializable{
 						zone.removeAllResponsiblePerson();
 						for(String emailPerson : listRPZone.getItems()){
 							zone.addResponsiblePerson(mainApp.getBotanicalPark().getResponsiblePerson(emailPerson));
+						}
+						
+						zone.removeAllVegetableZone();
+						
+						for(String nameVegetalWithSpecie : listVegetalZone.getItems()){
+							String[] split = nameVegetalWithSpecie.split(",");
+							zone.addVegetable(mainApp.getBotanicalPark().getVegetable(split[0], split[1]));
 						}
 						
 						mappedZonesParc.put(zone.getName(), zone);							
@@ -331,6 +413,32 @@ public class ConfigurationController implements Initializable{
 			}
 		});
 		
+		zoneVegetableValidateButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				if(choiceBoxVegetalZone.getSelectionModel().getSelectedIndex() != -1){
+					String nameVegetal = choiceBoxVegetalZone.getSelectionModel().getSelectedItem();
+					
+					if(!listVegetalZone.getItems().contains(nameVegetal)){
+						listVegetalZone.getItems().add(nameVegetal);
+					}
+				}
+			}
+		});
+		
+		zoneVegetableDeletedButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				
+				if(listVegetalZone.getSelectionModel().getSelectedIndex() != -1){
+					listVegetalZone.getItems().remove(listVegetalZone.getSelectionModel().getSelectedIndex());
+				}			
+			}
+		});
+				
+		
 	}
 	
 
@@ -347,7 +455,7 @@ public class ConfigurationController implements Initializable{
 				&& emailValid(emailResponsiblePerson.getText());
 	}
 	
-	public boolean isRowInsertionRP(){
+	private boolean isRowInsertionRP(){
 		if(indexListResponsiblePeopleSelected == -1){
 			return true;
 		}
@@ -360,7 +468,11 @@ public class ConfigurationController implements Initializable{
 		return name.equals("ajout") && firstName.equals("ajout") && email.equals("ajout@ajout.com");
 	}
 	
-	public void initializeResponsiblePerson(){
+	/**
+	 * Initialize le tab des personnes responsables
+	 */
+	
+	private void initializeResponsiblePerson(){
 		listResponsiblePerson.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		
 		listResponsiblePerson.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ResponsiblePerson>() {
@@ -451,6 +563,399 @@ public class ConfigurationController implements Initializable{
 		listFirstNameResponsiblePerson.setEditable(false);
 	}
 	
+	private boolean inputVegetableIsCorrect(){
+		return nameVegetable.getText().length() != 0 && choiceBoxSpecies.getSelectionModel().getSelectedIndex() >= 0;
+	}
+	
+	private boolean inputVegetableSpecieIsCorrect(){
+		return nameVegetableSpecie.getText().length() != 0;
+	}
+	
+	private boolean isVegetableInsertion(){
+		if(indexTableViewVegetal == -1){
+			return true;
+		}
+		
+		Vegetable vegetable = tableViewVegetables.getSelectionModel().getSelectedItem();
+		String name = vegetable.getName();
+		String description = vegetable.getDescriptionVegetal();
+		String nameSpecie = vegetable.getSpecie().getName();
+				
+		return name.equals("ajout") && description.equals("ajout") && nameSpecie.equals("ajout");
+	}
+	
+	private boolean isVegetableSpecieInsertion(){
+		if(indexTableViewVegetalSpecie == -1){
+			return true;
+		}
+		
+		VegetableSpecie vegetable = tableViewVegetablesSpecies.getSelectionModel().getSelectedItem();
+		String name = vegetable.getName();
+		String description = vegetable.getDescription();
+		return name.equals("ajout") && description.equals("ajout");
+	}
+	
+	/**
+	 * Initialise le tab des vegetaux
+	 */
+	
+	private void initializeVegetables(){
+		tableViewVegetablesSpecies.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		tableViewVegetables.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		
+		tableColumnNameVegetablesSpecies.setCellValueFactory(cellData -> cellData.getValue().getNameProperty());
+		tableColumnDescriptionVegetablesSpecies.setCellValueFactory(cellData -> cellData.getValue().getDescriptionProperty());
+		
+		tableColumnNameVegetables.setCellValueFactory(cellData -> cellData.getValue().getNameProperty());
+		tableColumnNameSpecieVegetables.setCellValueFactory(cellData -> cellData.getValue().getSpecie().getNameProperty());
+		tableColumnDescriptionVegetables.setCellValueFactory(cellData -> cellData.getValue().getDescriptionProperty());
+		
+		tableColumnNameVegetablesSpecies.setEditable(false);
+		tableColumnDescriptionVegetablesSpecies.setEditable(false);
+		tableColumnNameVegetables.setEditable(false);
+		tableColumnNameSpecieVegetables.setEditable(false);
+		tableColumnDescriptionVegetables.setEditable(false);
+		
+		tableViewVegetablesSpecies.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<VegetableSpecie>() {
+
+			@Override
+			public void changed(ObservableValue<? extends VegetableSpecie> observable, VegetableSpecie oldValue,
+					VegetableSpecie newValue) {
+				validateVegetableSpecies.setStyle("-fx-text-fill: black");
+				deletedVegetableSpecies.setStyle("-fx-text-fill: black");
+				indexTableViewVegetalSpecie = tableViewVegetablesSpecies.getSelectionModel().getSelectedIndex();
+				
+				if(newValue != null){
+					if(isVegetableSpecieInsertion()){
+						nameVegetableSpecie.setText("");
+						descriptionVegetableSpecie.setText("");
+						validateVegetableSpecies.setText("Ajout");
+						deletedVegetableSpecies.setVisible(false);
+					}
+					else{	
+						nameVegetableSpecie.setText(newValue.getName());
+						descriptionVegetableSpecie.setText(newValue.getDescription());
+						validateVegetableSpecies.setText("Modification");
+						deletedVegetableSpecies.setVisible(true);
+					}
+				}
+				
+			}
+		});
+		
+		tableViewVegetables.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Vegetable>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Vegetable> observable, Vegetable oldValue,
+					Vegetable newValue) {
+				validateVegetable.setStyle("-fx-text-fill: black");
+				deletedVegetable.setStyle("-fx-text-fill: black");
+				indexTableViewVegetal = tableViewVegetables.getSelectionModel().getSelectedIndex();
+				
+				if(newValue != null){
+					if(isVegetableInsertion()){
+						nameVegetableSpecie.setText("");
+						descriptionVegetableSpecie.setText("");
+						validateVegetable.setText("Ajout");
+						deletedVegetable.setVisible(false);
+					}
+					else{	
+						nameVegetable.setText(newValue.getName());
+						descriptionVegetable.setText(newValue.getDescriptionVegetal());
+						validateVegetable.setText("Modification");
+						deletedVegetable.setVisible(true);
+					}
+				}
+			}
+		});
+		
+		
+		deletedVegetable.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				if(!isVegetableInsertion()){
+					
+					Vegetable v = tableViewVegetables.getSelectionModel().getSelectedItem();
+					
+					if(mainApp.getBotanicalPark().removeVegetable(v)){
+						tableViewVegetables.getItems().remove(v);
+						deletedVegetable.setStyle("-fx-text-fill: green");								
+					}
+					else deletedVegetable.setStyle("-fx-text-fill: red");		
+				}
+				else{
+					deletedVegetable.setStyle("-fx-text-fill: red");						
+				}
+			}
+		});
+		
+		deletedVegetableSpecies.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				if(!isVegetableSpecieInsertion()){
+					VegetableSpecie vs = tableViewVegetablesSpecies.getSelectionModel().getSelectedItem();
+					
+					if(mainApp.getBotanicalPark().removeVegetableSpecie(vs)){
+						tableViewVegetablesSpecies.getItems().remove(vs);
+						initDataVegetables();
+						deletedVegetableSpecies.setStyle("-fx-text-fill: green");								
+					}
+					else deletedVegetableSpecies.setStyle("-fx-text-fill: red");	
+				}
+				else{
+					deletedVegetableSpecies.setStyle("-fx-text-fill: red");	
+				}
+			}
+		});
+		
+		validateVegetableSpecies.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				if(inputVegetableSpecieIsCorrect()){
+					if(isVegetableSpecieInsertion()){
+						
+						VegetableSpecie vegetableSpecie = new VegetableSpecie(nameVegetableSpecie.getText(), descriptionVegetableSpecie.getText());
+						vegetableSpecie.setQueries(mainApp.getQueries());
+						
+						if(mainApp.getBotanicalPark().addVegetableSpecie(vegetableSpecie)){
+							tableViewVegetablesSpecies.getItems().add(vegetableSpecie);
+							choiceBoxSpecies.getItems().add(vegetableSpecie.getName());
+							validateVegetableSpecies.setStyle("-fx-text-fill: green");	
+						}
+						else validateVegetableSpecies.setStyle("-fx-text-fill: red");		
+					}
+					else{
+						VegetableSpecie vegetableSpecie = tableViewVegetablesSpecies.getSelectionModel().getSelectedItem();
+						
+						if(vegetableSpecie.updateAll(nameVegetableSpecie.getText(), descriptionVegetableSpecie.getText())){
+							validateVegetableSpecies.setStyle("-fx-text-fill: green");								
+						}
+						else validateVegetableSpecies.setStyle("-fx-text-fill: red");
+					}
+				}
+				else{
+					validateVegetableSpecies.setStyle("-fx-text-fill: red");
+				}
+			}
+		});
+		
+		validateVegetable.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				if(inputVegetableIsCorrect()){
+					if(isVegetableInsertion()){
+						VegetableSpecie vegetableSpecie = mainApp.getBotanicalPark().getVegetableSpecie(choiceBoxSpecies.getSelectionModel().getSelectedItem());
+						Vegetable vegetable = new Vegetable(nameVegetable.getText(), descriptionVegetable.getText(), vegetableSpecie);
+						vegetable.setQueries(mainApp.getQueries());
+						
+						if(mainApp.getBotanicalPark().addVegetable(vegetable)){
+							tableViewVegetables.getItems().add(vegetable);
+							validateVegetable.setStyle("-fx-text-fill: green");	
+						}
+						else validateVegetable.setStyle("-fx-text-fill: red");		
+					}
+					else{
+						VegetableSpecie vegetableSpecie = mainApp.getBotanicalPark().getVegetableSpecie(choiceBoxSpecies.getSelectionModel().getSelectedItem());
+						Vegetable vegetable = tableViewVegetables.getSelectionModel().getSelectedItem();
+						
+						if(vegetable.updateAll(nameVegetableSpecie.getText(), descriptionVegetableSpecie.getText(), vegetableSpecie)){
+							validateVegetable.setStyle("-fx-text-fill: green");								
+						}
+						else validateVegetable.setStyle("-fx-text-fill: red");
+					}
+				}
+				else{
+					validateVegetable.setStyle("-fx-text-fill: red");
+				}
+			}
+		});
+	}
+	
+	private int selectedIndexTableViewTypeAlert = -1;
+	
+	
+	private boolean isInsertionTypeAlert(){
+		TypeAlert typeAlert = tableViewTypeAlerts.getSelectionModel().getSelectedItem();
+		
+		if(typeAlert == null) return true;
+		
+		return typeAlert.getNameSensor().equals("ajout") && typeAlert.getMessage().equals("ajout");
+	}
+	
+	private boolean inputTypeAlertIsValid(){
+		return choiceBoxZonesTypeAlert.getSelectionModel().getSelectedIndex() >= 0
+				&& choiceBoxSensor.getSelectionModel().getSelectedIndex() >= 0
+				&& (superiorCheckBox.isSelected() || inferiorCheckBox.isSelected())
+				&& messageAlertTextField.getText().length() > 0;
+	}
+	
+	private void initTypeAlert(){
+		tableViewTypeAlertsInZone.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		tableViewTypeAlerts.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		
+		tableColumnIdTypeAlertZone.setEditable(false);
+		tableColumnNameZoneTypeAlert.setEditable(false);
+		
+		tableColumnIdTypeAlert.setEditable(false);
+		tableColumnCondAlert.setEditable(false);
+		tableColumnMessageAlert.setEditable(false);
+		tableColumnSensorTypeAlert.setEditable(false);
+		
+		tableColumnIdTypeAlert.setCellValueFactory(cellData -> cellData.getValue().getIdProperty());
+		tableColumnMessageAlert.setCellValueFactory(cellData -> cellData.getValue().getMessageAlertProperty());
+		tableColumnCondAlert.setCellValueFactory(cellData -> cellData.getValue().getIsSuperiorProperty());
+		tableColumnSensorTypeAlert.setCellValueFactory(cellData -> cellData.getValue().getNameSensorProperty());
+		
+		
+		tableColumnIdTypeAlertZone.setCellValueFactory(cellData -> cellData.getValue().getIdTypeAlertProperty());
+		tableColumnNameZoneTypeAlert.setCellValueFactory(cellData -> cellData.getValue().getNameZoneProperty());
+		
+		
+		
+		validateTypeAlertInZoneButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				System.out.println("Validate");
+					
+			}
+		});
+		
+		deletedtypeAlertInZoneButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				System.out.println("deleted");
+			}
+		});
+		
+		
+		
+		//TODO : A FAIRE Coté TypeAlert Zone
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+
+		tableViewTypeAlerts.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TypeAlert>() {
+
+			@Override
+			public void changed(ObservableValue<? extends TypeAlert> observable, TypeAlert oldValue,
+					TypeAlert newValue) {
+								
+				selectedIndexTableViewTypeAlert = tableViewTypeAlerts.getSelectionModel().getSelectedIndex();
+
+				if(isInsertionTypeAlert()){
+					deletedtypeAlertButton.setVisible(false);
+					validateTypeAlertButton.setText("Ajouter");
+
+					choiceBoxZonesTypeAlert.getSelectionModel().select(0);
+					choiceBoxSensor.getSelectionModel().select(0);
+					superiorCheckBox.setSelected(false);
+					inferiorCheckBox.setSelected(false);
+					messageAlertTextField.setText("");				
+				}
+				else{
+					deletedtypeAlertButton.setVisible(true);
+					validateTypeAlertButton.setText("Modification");
+										
+					
+					if(newValue.getIsSuperior()){
+						superiorCheckBox.setSelected(true);
+						inferiorCheckBox.setSelected(false);
+					}
+					else{
+						superiorCheckBox.setSelected(false);
+						inferiorCheckBox.setSelected(true);						
+					}
+					
+					messageAlertTextField.setText(newValue.getMessage());
+				}
+			}
+		});
+		
+		superiorCheckBox.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				if(superiorCheckBox.isSelected() && inferiorCheckBox.isSelected()){
+					inferiorCheckBox.setSelected(false);
+				}
+			}
+		});
+		
+		inferiorCheckBox.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				if(superiorCheckBox.isSelected() && inferiorCheckBox.isSelected()){
+					superiorCheckBox.setSelected(false);
+				}			
+			}
+		});
+		
+		validateTypeAlertButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent arg0) {
+				if(inputTypeAlertIsValid()){
+					if(isInsertionTypeAlert()){
+						String nameZone = choiceBoxZonesTypeAlert.getSelectionModel().getSelectedItem();
+						String message = messageAlertTextField.getText();
+						String nameSensor = choiceBoxSensor.getSelectionModel().getSelectedItem();
+						boolean isSuperior = superiorCheckBox.isSelected();
+						
+						TypeAlert t = new TypeAlert(0, message, nameSensor, isSuperior);
+						
+					}
+					else{
+						
+					}
+				}
+			}
+		});		
+		
+		deletedtypeAlertButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent arg0) {
+				if(tableViewTypeAlerts.getSelectionModel().getSelectedItem() != null){
+					
+				}
+			}
+		});		
+		
+		
+	}
+	
+	
+	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
@@ -459,21 +964,38 @@ public class ConfigurationController implements Initializable{
 			public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
 				if(newValue != null){
 					if(newValue.getText().equals("Zones")){
-						addAllRpInChoiceBox();						
+						addAllRpInChoiceBox();
+						addAllVegetalInChoiceBox();
 					}
 				}
 			}
 		});
+		
 		initializeZones();
+		initTypeAlert();
 		initializeResponsiblePerson();
+		initializeVegetables();
+		
 	}
 
-	public void addAllRpInChoiceBox(){
+	private void addAllRpInChoiceBox(){
 		choiceBoxRPZone.getItems().clear();
 		choiceBoxRPZone.getItems().addAll(mainApp.getBotanicalPark().getListSringRP());
 	}
+	
+	private void addAllInformationForTypeAlert(){
+		choiceBoxZonesTypeAlert.getItems().clear();
+		choiceBoxSensor.getItems().clear();
+		choiceBoxZonesTypeAlert.getItems().addAll(mainApp.getBotanicalPark().getListSringZones());
+		choiceBoxSensor.getItems().addAll(mainApp.getBotanicalPark().getListSringSensor());
+	}
+	
+	private void addAllVegetalInChoiceBox(){
+		choiceBoxVegetalZone.getItems().clear();
+		choiceBoxVegetalZone.getItems().addAll(mainApp.getBotanicalPark().getAllVegetableStringWithSpecie());
+	}
 
-	public void initDataListZones(){
+	private void initDataListZones(){
 		listZones.getItems().add("ajouter");
 		listZones.getItems().addAll(mainApp.getBotanicalPark().getListSringZones());
 		
@@ -482,17 +1004,48 @@ public class ConfigurationController implements Initializable{
 		}
 		
 		addAllRpInChoiceBox();
+		addAllVegetalInChoiceBox();
 	}
 	
-	public void initDataListRP(){
+	private void initDataTypeAlertZone(){
+		tableViewTypeAlertsInZone.getItems().add(new ZoneTypeAlert("ajout", -1));
+		choiceBoxSensorForZone.getItems().addAll(mainApp.getBotanicalPark().getListSringSensor());
+	}
+	
+	private void initDataTypeAlert(){
+		tableViewTypeAlerts.getItems().add(new TypeAlert(0, "ajout", "ajout", false));
+		addAllInformationForTypeAlert();
+	}
+	
+	private void initDataListRP(){
 		listResponsiblePerson.getItems().add(new ResponsiblePerson("ajout@ajout.com", "ajout", "ajout"));
 		listResponsiblePerson.getItems().addAll(mainApp.getBotanicalPark().getResponsiblePersons());
+		choiceBoxVegetalZone.getItems().clear();
+		choiceBoxVegetalZone.getItems().addAll(mainApp.getBotanicalPark().getAllVegetableStringWithSpecie());
+	}
+	
+	private void initDataSpecies(){
+		tableViewVegetablesSpecies.getItems().add(new VegetableSpecie("ajout", "ajout"));
+		tableViewVegetablesSpecies.getItems().addAll(mainApp.getBotanicalPark().getVegetablesSpecies());
+	}
+	
+	private void initDataVegetables(){
+		choiceBoxSpecies.getItems().clear();
+		tableViewVegetables.getItems().clear();
+		choiceBoxSpecies.getItems().addAll(mainApp.getBotanicalPark().getVegetablesSpeciesString());
+		tableViewVegetables.getItems().add(new Vegetable("ajout", "ajout", new VegetableSpecie("ajout", "ajout")));
+		tableViewVegetables.getItems().addAll(mainApp.getBotanicalPark().getAllVegetable());
+		
 	}
 	
 	public void setMainApp(MainFrame mainApp){
-		this.mainApp = mainApp;
 		
+		this.mainApp = mainApp;
+		initDataVegetables();
+		initDataSpecies();		
 		initDataListZones();
 		initDataListRP();
+		initDataTypeAlert();
+		initDataTypeAlertZone();
 	}
 }

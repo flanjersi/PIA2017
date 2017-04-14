@@ -15,6 +15,8 @@ import model.BotanicalPark;
 import model.DataFromSensor;
 import model.ResponsiblePerson;
 import model.Sensor;
+import model.Vegetable;
+import model.VegetableSpecie;
 import model.Zone;
 
 public class ReaderSqlData {
@@ -29,6 +31,8 @@ public class ReaderSqlData {
 	
 	public BotanicalPark readAllData(){
 		System.out.println("LECTURE BASE DE DONNEE");
+		readSpecies();
+		readVegetables();
 		readSensors();
 		readZones();
 		readDataExpected();
@@ -60,7 +64,6 @@ public class ReaderSqlData {
 			results = executeQuerie(query);
 			
 			for(Map<String, String> resultPerson : results){			
-				
 				emailPeople = resultPerson.get("email_personne");
 				firstNamePeople = resultPerson.get("prenom_personne");
 				namePeople = resultPerson.get("nom_personne");
@@ -69,6 +72,52 @@ public class ReaderSqlData {
 		}
 		
 		return rps;
+	}
+		
+	public Map<VegetableSpecie, List<Vegetable>> readAllVegetableForZone(int idZone){
+		Map<VegetableSpecie, List<Vegetable>> mapVegetables = new HashMap<>();
+		
+		int idEspece;
+		String nameVegetable;
+		
+		String querySelectIdVegetal = "SELECT id_vegetal FROM CONTIENT_VEGETAUX WHERE id_zone = " + idZone;
+		String query;
+		
+		
+		int idVegetable;
+		
+		List<Map<String, String>> results = executeQuerie(querySelectIdVegetal);
+		
+		for(Map<String, String> result : results){
+			idVegetable = Integer.valueOf(result.get("id_vegetal"));
+			
+			query = "SELECT nom_vegetal, id_espece FROM VEGETAUX WHERE id_vegetal = " + idVegetable;
+			
+			results = executeQuerie(query);
+			
+			for(Map<String, String> resultsVegetable : results){
+				
+				nameVegetable = resultsVegetable.get("nom_vegetal");
+				idEspece = Integer.valueOf(resultsVegetable.get("id_espece"));
+				
+				query = "SELECT nom_espece FROM ESPECES_VEGETALES WHERE id_espece = " + idEspece;
+				
+				List<Map<String, String>> results2 = executeQuerie(query);
+				
+				String nameSpecie = results2.get(0).get("nom_espece");
+				
+				Vegetable v = parc.getVegetable(nameSpecie, nameVegetable);
+				VegetableSpecie vs = parc.getVegetableSpecie(nameSpecie);
+				
+				if(!mapVegetables.containsKey(vs)){
+					mapVegetables.put(vs, new ArrayList<>());
+				}
+				
+				mapVegetables.get(vs).add(v);
+			}
+		}
+		
+		return mapVegetables;
 	}
 	
 	public void readZones(){
@@ -85,12 +134,14 @@ public class ReaderSqlData {
 			
 			Zone zone = new Zone(idZone, nameZone, descriptionZone, parc.getSensors());
 			zone.setResponsiblesPerson(readAllResponsiblePersonForZone(idZone));
+			zone.setVegetables(readAllVegetableForZone(idZone));
 			parc.initZone(zone);
 		}		
 	}
 	
 	public void readDataExpected(){
 		String query = "SELECT donnee_attendu, date_donnee_attendu, marge, id_zone, id_capteur FROM DONNEE_CAPTEUR_ATTENDU";
+		
 		
 		List<Map<String, String>> results = executeQuerie(query);
 		
@@ -102,10 +153,56 @@ public class ReaderSqlData {
 			data = Integer.valueOf(result.get("donnee_attendu"));
 			date = Integer.valueOf(result.get("date_donnee_attendu"));
 			margin = Integer.valueOf(result.get("marge"));
+			query = "SELECT nom_zone FROM ZONE WHERE id_zone = " + idZone;
+			
+			List<Map<String, String>> results2 = executeQuerie(query);
 			
 			DataFromSensor dataSensor = new DataFromSensor(data, date, margin);
-			parc.getZones().get(idZone - 1).addDataSensorExpected(idSensor - 1, dataSensor); 
+			
+			parc.getZone(results2.get(0).get("nom_zone")).addDataSensorExpected(idSensor - 1, dataSensor); 
 		}	
+	}
+	
+	public void readSpecies(){
+		String query = "SELECT nom_espece, description_espece FROM ESPECES_VEGETALES";
+		
+		List<Map<String, String>> results = executeQuerie(query);
+		
+		String name, description;
+		
+		for(Map<String, String> result : results){			
+			name = result.get("nom_espece");
+			description = result.get("description_espece");
+			
+			VegetableSpecie vp = new VegetableSpecie(name, description);
+			parc.initVegetableSpecie(vp);
+		}	
+	}
+	
+	public void readVegetables(){
+		String query = "SELECT nom_vegetal, description_vegetal, id_espece FROM VEGETAUX";
+		
+		List<Map<String, String>> results = executeQuerie(query);
+		
+		String name, description, nomEspece;
+		int idEspece;
+		
+		for(Map<String, String> result : results){			
+			name = result.get("nom_vegetal");
+			description = result.get("description_vegetal");
+			idEspece = Integer.valueOf(result.get("id_espece"));
+			
+			query = "SELECT nom_espece FROM ESPECES_VEGETALES WHERE id_espece = " + idEspece;
+			
+			List<Map<String, String>> results2 = executeQuerie(query);
+				
+			nomEspece = results2.get(0).get("nom_espece");
+			
+			VegetableSpecie vp = parc.getVegetableSpecie(nomEspece);
+			Vegetable v = new Vegetable(name, description, vp);
+			
+			parc.initVegetable(v);
+		}			
 	}
 	
 	public void readSensors(){

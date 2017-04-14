@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import com.sun.xml.internal.bind.v2.model.core.ID;
 
@@ -119,7 +120,6 @@ public class Zone {
 	
 	public boolean addResponsiblePerson(ResponsiblePerson rp){
 		if(!responsiblesPersons.contains(rp)){
-			System.out.println(name + " " + rp.getEmail());
 			responsiblesPersons.add(rp);
 			return queries.addResponsiblePersonInZone(name, rp.getEmail());
 		}
@@ -135,6 +135,11 @@ public class Zone {
 		queries.deleteAllResponsiblePersonInZone(name);
 	}
 	
+	public void removeAllVegetableZone(){
+		vegetables.clear();
+		queries.removeAllVegetableInZone(name);
+	}
+	
 	public void initResponsiblePerson(ResponsiblePerson rp){
 		
 	}
@@ -142,11 +147,7 @@ public class Zone {
 	public void addAlert(Alert alert) {
 		alerts.add(alert);
 	}
-
-	public void addTypeAlert(TypeAlert typeAlert) {
-		typeAlerts.add(typeAlert);
-	}
-
+	
 	public boolean addSpecie(VegetableSpecie specie) {
 		if(!vegetables.containsKey(specie)){
 			vegetables.put(specie, new ArrayList<>());
@@ -160,12 +161,20 @@ public class Zone {
 	public boolean addVegetable(Vegetable vegetable) {
 		List<Vegetable> vegetablesOfSpecie = vegetables.get(vegetable.getSpecie());
 		
-		if(vegetablesOfSpecie != null){
+		if(vegetablesOfSpecie == null) vegetables.put(vegetable.getSpecie(), new ArrayList<>());
+
+		vegetablesOfSpecie = vegetables.get(vegetable.getSpecie());
+		
+		if(queries.addVegetableInZone(vegetable.getName(), name)){
 			vegetablesOfSpecie.add(vegetable);
 			return true;
 		}
 		
 		return false;
+	}
+	
+	public void setVegetables(Map<VegetableSpecie, List<Vegetable>> map){
+		this.vegetables = map;
 	}
 
 	public String getName(){
@@ -218,5 +227,45 @@ public class Zone {
 		this.queries = queries;
 	}
 	
+	public void removeVegetable(Vegetable vegetable){
+		if(vegetables.containsKey(vegetable.getSpecie())){
+			vegetables.get(vegetable.getSpecie()).remove(vegetable);
+		}
+	}
 	
+	public List<String> getAllVegetableStringWithSpecie(){
+		List<String> list = new ArrayList<>();
+		
+		for(Entry<VegetableSpecie, List<Vegetable>> species : vegetables.entrySet()){
+			for(Vegetable v : species.getValue()){
+				list.add(species.getKey().getName() + "," + v.getName());				
+			}
+		}
+		
+		return list;
+	}
+	
+	public boolean addTypeAlert(TypeAlert typeAlert){
+		
+		
+		return false;
+	}
+	
+	public boolean removeTypeAlert(){
+		
+		return false;
+	}
+	
+	public boolean updateTypeAlert(){
+		
+		
+		return false;
+	}
+	
+	
+	public void removeVegetableSpecie(VegetableSpecie vegetableSpecie){
+		if(vegetables.containsKey(vegetableSpecie)){
+			vegetables.remove(vegetableSpecie);
+		}
+	}
 }

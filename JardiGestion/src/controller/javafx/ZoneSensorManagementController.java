@@ -257,14 +257,14 @@ public class ZoneSensorManagementController implements Initializable{
 							DataFromSensor data = new DataFromSensor(Integer.valueOf(expectedValue.getText()), (int)epochBegin, Integer.valueOf(marginValue.getText()));
 							
 							zone.addDataSensorExpected(indexSensor, data);
-							mainApp.getQueries().addDataSensorExpected(indexZone + 1, data.getDonnee(), data.getDateDonnee(), indexSensor + 1, data.getMarge());
+							mainApp.getQueries().addDataSensorExpected(zone.getName(), data.getDonnee(), data.getDateDonnee(), indexSensor + 1, data.getMarge());
 							
 
 							data = new DataFromSensor(Integer.valueOf(expectedValue.getText()), (int)epochLast, Integer.valueOf(marginValue.getText()));
 							
 							
 							zone.addDataSensorExpected(indexSensor, data);
-							mainApp.getQueries().addDataSensorExpected(indexZone + 1, data.getDonnee(), data.getDateDonnee(), indexSensor + 1, data.getMarge());
+							mainApp.getQueries().addDataSensorExpected(zone.getName(), data.getDonnee(), data.getDateDonnee(), indexSensor + 1, data.getMarge());
 							
 							eventAxis();
 							

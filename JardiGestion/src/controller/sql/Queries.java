@@ -3,6 +3,8 @@ package controller.sql;
 import java.sql.SQLException;
 
 import model.ResponsiblePerson;
+import model.Vegetable;
+import model.VegetableSpecie;
 import model.Zone;
 
 public class Queries {
@@ -224,10 +226,11 @@ public class Queries {
 
 	
 	
-	public synchronized boolean addDataSensorReceive(int idZone, int donnee, double date, int idSensor){
+	public synchronized boolean addDataSensorReceive(String nameZone, int donnee, double date, int idSensor){
+		String selectIdZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + nameZone + "'";
 		String query = "INSERT INTO DONNEE_CAPTEUR"
 				+ "(donnee_recu, date_donnee_recu, id_zone, id_capteur)"
-				+ " VALUES (" + donnee + "," + date + "," + idZone + "," + idSensor + ")";
+				+ " VALUES (" + donnee + "," + date + ",(" + selectIdZone + ")," + idSensor + ")";
 
 		try {
 			con.connect();
@@ -242,10 +245,11 @@ public class Queries {
 		}
 	}	
 	
-	public synchronized boolean addDataSensorExpected(int idZone, int donnee, double date, int idSensor, int marge){
+	public synchronized boolean addDataSensorExpected(String nameZone, int donnee, double date, int idSensor, int marge){
+		String selectIdZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + nameZone + "'";
 		String query = "INSERT INTO DONNEE_CAPTEUR_ATTENDU"
 				+ "(donnee_attendu, date_donnee_attendu, id_zone, id_capteur, marge)"
-				+ " VALUES (" + donnee + "," + date + "," + idZone + "," + idSensor + "," + marge + ")";
+				+ " VALUES (" + donnee + "," + date + ",(" + selectIdZone + ")," + idSensor + "," + marge + ")";
 		
 		try {
 			con.connect();
@@ -262,7 +266,7 @@ public class Queries {
 	
 	public synchronized boolean addVegetableSpecie(String name, String description){
 		String query = "INSERT INTO ESPECES_VEGETALES"
-				+ "(nom_espece, description_espece) VALUES ('" + name + "','" + description + ")";
+				+ "(nom_espece, description_espece) VALUES ('" + name + "','" + description + "')";
 
 		try {
 			con.connect();
@@ -279,10 +283,77 @@ public class Queries {
 		}
 	}
 	
+	public synchronized boolean updateVegetableSpecie(String oldName, String name, String description){
+		String query = "UPDATE ESPECES_VEGETALES SET nom_espece = '" + name + "', description_espece = '" + description + "' "
+				+ "WHERE nom_espece = '" + oldName + "'";
+
+		try {
+			con.connect();
+			con.getStatement().execute(query);
+			con.close();
+			return true;
+		} catch (SQLException e) {
+			con.close();
+			e.printStackTrace();
+			
+			return false;
+		}
+	}
+	
+	public synchronized boolean updateVegetable(String oldName, String name, String description, String nameSpecie){
+		String idSpecie = "SELECT id_espece FROM ESPECES_VEGETALES WHERE nom_espece = '" + nameSpecie + "'";
+		String query = "UPDATE VEGETAUX SET nom_vegetal = '" + name + "', description_vegetal = '" + description + "', id_espece = (" + idSpecie +") "
+				+ "WHERE nom_vegetal = '" + oldName + "'";
+
+		try {
+			con.connect();
+			con.getStatement().execute(query);
+			con.close();
+			return true;
+		} catch (SQLException e) {
+			con.close();
+			e.printStackTrace();
+			
+			return false;
+		}
+	}
+	
+	public synchronized boolean deleteVegetable(Vegetable vegetable){
+		String query = "DELETE FROM VEGETAUX WHERE nom_vegetal = '" + vegetable.getName() + "'"; 
+
+		try {
+			con.connect();
+			con.getStatement().execute(query);
+			con.close();
+			return true;
+		} catch (SQLException e) {
+			con.close();
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public synchronized boolean deleteVegetableSpecie(VegetableSpecie vegetableSpecie){
+		String query = "DELETE FROM ESPECES_VEGETALES WHERE nom_espece = '" + vegetableSpecie.getName() + "'"; 
+
+		try {
+			con.connect();
+			con.getStatement().execute(query);
+			con.close();
+			return true;
+		} catch (SQLException e) {
+			con.close();
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	
 	public synchronized boolean addVegetable(String name, String description, String specieName){
+		String idSpecie = "SELECT id_espece FROM ESPECES_VEGETALES WHERE nom_espece = '" + specieName + "'";
 		String query = "INSERT INTO VEGETAUX"
-				+ "(nom_vegetal, description_vegetal, nom_espece) VALUES "
-				+ "('" + name + "','" + description + "','" + specieName + ")";
+				+ "(nom_vegetal, description_vegetal, id_espece) VALUES "
+				+ "('" + name + "','" + description + "',(" + idSpecie + "))";
 
 		try {
 			con.connect();
@@ -298,10 +369,13 @@ public class Queries {
 		}		
 	}
 	
-	public synchronized boolean addVegetableInZone(String name, int idZone){
+	public synchronized boolean addVegetableInZone(String nameVegetal, String nameZone){
+		String selectIdZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + nameZone + "'";
+		String selectIdVegetable = "SELECT id_vegetal FROM VEGETAUX WHERE nom_vegetal = '" + nameVegetal + "'";
+		
 		String query = "INSERT INTO CONTIENT_VEGETAUX"
-				+ "(nom_vegetal, id_zone) VALUES "
-				+ "('" + name + "'," + idZone + ")";
+				+ "(id_vegetal, id_zone) VALUES "
+				+ "((" + selectIdVegetable + "),(" + selectIdZone + "))";
 
 		try {
 			con.connect();
@@ -315,6 +389,25 @@ public class Queries {
 			
 			return false;
 		}		
+	}
+	
+	public synchronized boolean removeAllVegetableInZone(String nameZone){
+		String selectIdZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + nameZone + "'";
+		String query = "DELETE FROM CONTIENT_VEGETAUX WHERE id_zone = (" + selectIdZone + ")";
+
+
+		try {
+			con.connect();
+			con.getStatement().execute(query);
+			con.close();
+			
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			con.close();
+			
+			return false;
+		}				
 	}
 	
 	public synchronized boolean addSentMail(String message, int dateEnvoie, int idAlert, int idPerson){
@@ -335,4 +428,53 @@ public class Queries {
 			return false;
 		}				
 	}	
+	
+	public synchronized boolean addTypeAlert(String message, String nameZone, String nameSensor, boolean est_donnee_superieure){
+		String querySensor = "SELECT id_capteur FROM CAPTEUR WHERE nom_capteur = '" + nameSensor + "'";
+		String queryIdZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + nameZone + "'";
+		
+		String query = "INSERT INTO TYPE_ALERTE (description_type_alerte, est_donnee_superieur, id_capteur) VALUES ('"
+				+ message + "', " + est_donnee_superieure + " , (" + querySensor 
+				+ ")) WHERE NOT EXIST ( SELECT * FROM TYPE_ALERTE WHERE id_type_alerte IN ( SELECT id_type_alerte FROM TYPE_ALERTE_CORRESPONDRE_ZONE WHERE id_zone = (" + queryIdZone + ")))";
+
+		try {
+			con.connect();
+			con.getStatement().execute(query);
+			con.close();
+			
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			con.close();
+			
+			return false;
+		}		
+	}
+	
+	public synchronized boolean addTypeAlertInZone(String message, String nameZone, String nameSensor, boolean est_donnee_superieure){
+
+		String querySensor = "SELECT id_capteur FROM CAPTEUR WHERE nom_capteur = '" + nameSensor + "'";
+		String queryIdZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + nameZone + "'";
+		//String queryIdTypeAlert = "SELECT id_type_alerte FROM TYPE_ALERTE WHERE nameSensor"
+		String query = "INSERT INTO TYPE_ALERTE_CORRESPONDRE_ZONE (id_zone, id_type_alerte) VALUES (("
+				+ queryIdZone + "), (" + est_donnee_superieure + ")";
+
+		try {
+			con.connect();
+			con.getStatement().execute(query);
+			con.close();
+			
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			con.close();
+			
+			return false;
+		}		
+	
+		
+	}
+	
+	
+	
 }

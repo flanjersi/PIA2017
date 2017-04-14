@@ -75,7 +75,7 @@ public class TableDeclaration {
 			+ "nom_vegetal         texte UNIQUE NOT NULL ,\n"
 	        + "description_vegetal texte ,\n"
 	        + "id_espece          integer NOT NULL ,\n"
-	        + "FOREIGN KEY (id_espece) REFERENCES ESPECES_VEGETALES(id_espece)\n"
+	        + "FOREIGN KEY (id_espece) REFERENCES ESPECES_VEGETALES(id_espece) ON DELETE CASCADE\n"
 	        + ");";
 	
 	static final public String CONTIENT_VEGETAUX = "CREATE TABLE IF NOT EXISTS CONTIENT_VEGETAUX(\n"
