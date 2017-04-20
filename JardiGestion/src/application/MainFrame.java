@@ -42,7 +42,7 @@ public class MainFrame extends Application {
 	public void initMainFrame(){
 		try {
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainFrame.class.getResource("../view/fxml/MainFrame.fxml"));
+			loader.setLocation(MainFrame.class.getResource("/view/fxml/MainFrame.fxml"));
 			rootLayout = (BorderPane) loader.load();
 			
 			Scene scene = new Scene(rootLayout);
@@ -57,7 +57,7 @@ public class MainFrame extends Application {
 		try{
 			FXMLLoader loader = new FXMLLoader();
 			
-			loader.setLocation(MainFrame.class.getResource("../view/fxml/Home.fxml"));
+			loader.setLocation(MainFrame.class.getResource("/view/fxml/Home.fxml"));
 			
 			AnchorPane homePanel = (AnchorPane) loader.load();
 			homeController = loader.getController();
@@ -72,7 +72,7 @@ public class MainFrame extends Application {
 	public void showMenuBar(){
 		try{
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainFrame.class.getResource("../view/fxml/MenuBar.fxml"));
+			loader.setLocation(MainFrame.class.getResource("/view/fxml/MenuBar.fxml"));
 			
 			MenuBar menuBar = (MenuBar) loader.load();
 			
@@ -88,7 +88,7 @@ public class MainFrame extends Application {
 	public void showZonesManagementController(){
 		try{
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainFrame.class.getResource("../view/fxml/ZonesManagement.fxml"));
+			loader.setLocation(MainFrame.class.getResource("/view/fxml/ZonesManagement.fxml"));
 			
 			TabPane tabPane = (TabPane) loader.load();
 			
@@ -109,7 +109,7 @@ public class MainFrame extends Application {
 	public void showAnalyse(){
 		try{
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainFrame.class.getResource("../view/fxml/ZonesAnalyse.fxml"));
+			loader.setLocation(MainFrame.class.getResource("/view/fxml/ZonesAnalyse.fxml"));
 			
 			TabPane tabPane = (TabPane) loader.load();
 			
@@ -130,7 +130,7 @@ public class MainFrame extends Application {
 	public void showConfiguration(){
 		try{
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainFrame.class.getResource("../view/fxml/Configuration.fxml"));
+			loader.setLocation(MainFrame.class.getResource("/view/fxml/Configuration.fxml"));
 			
 			TabPane tabPane = (TabPane) loader.load();
 			

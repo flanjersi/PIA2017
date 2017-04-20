@@ -1,17 +1,17 @@
 package controller.javafx;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import application.MainFrame;
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -25,7 +25,6 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -775,8 +774,6 @@ public class ConfigurationController implements Initializable{
 		});
 	}
 	
-	private int selectedIndexTableViewTypeAlert = -1;
-	
 	
 	private boolean isInsertionTypeAlert(){
 		TypeAlert typeAlert = tableViewTypeAlerts.getSelectionModel().getSelectedItem();
@@ -786,14 +783,35 @@ public class ConfigurationController implements Initializable{
 		return typeAlert.getNameSensor().equals("ajout") && typeAlert.getMessage().equals("ajout");
 	}
 	
-	private boolean inputTypeAlertIsValid(){
+	private boolean inputTypeAlertInZoneIsValid(){
 		return choiceBoxZonesTypeAlert.getSelectionModel().getSelectedIndex() >= 0
-				&& choiceBoxSensor.getSelectionModel().getSelectedIndex() >= 0
-				&& (superiorCheckBox.isSelected() || inferiorCheckBox.isSelected())
-				&& messageAlertTextField.getText().length() > 0;
+				&& choiceBoxSensorForZone.getSelectionModel().getSelectedIndex() >= 0
+				&& choiceBoxIdTypeAlerts.getSelectionModel().getSelectedIndex() >= 0;
 	}
 	
+	private boolean inputTypeAlertIsValid(){
+		return choiceBoxSensor.getSelectionModel().getSelectedIndex() >= 0
+				&& (superiorCheckBox.isSelected() || inferiorCheckBox.isSelected());
+		
+	}
+	
+	private void updateChoiceTypeAlertForZone(){
+		String name = choiceBoxSensorForZone.getSelectionModel().getSelectedItem();
+		if(name != null){
+			choiceBoxIdTypeAlerts.getItems().clear();
+			choiceBoxIdTypeAlerts.getItems().addAll(mainApp.getBotanicalPark().getListTypeAlertFromSensor(name));			
+		}
+	}
+	
+	
 	private void initTypeAlert(){
+		deletedtypeAlertButton.setVisible(false);
+		validateTypeAlertButton.setText("Ajouter");
+
+		deletedtypeAlertInZoneButton.setVisible(false);
+		validateTypeAlertInZoneButton.setText("Ajouter");
+
+		
 		tableViewTypeAlertsInZone.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		tableViewTypeAlerts.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		
@@ -815,13 +833,41 @@ public class ConfigurationController implements Initializable{
 		tableColumnNameZoneTypeAlert.setCellValueFactory(cellData -> cellData.getValue().getNameZoneProperty());
 		
 		
+		choiceBoxSensorForZone.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+			
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				
+				if(newValue != null){
+					updateChoiceTypeAlertForZone();
+				}
+			}
+			
+		});
 		
 		validateTypeAlertInZoneButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 
 			@Override
 			public void handle(MouseEvent event) {
-				System.out.println("Validate");
+				if(inputTypeAlertInZoneIsValid()){
+					String nameZone = choiceBoxZonesTypeAlert.getSelectionModel().getSelectedItem();
+					int idTypeAlert = Integer.valueOf(choiceBoxIdTypeAlerts.getSelectionModel().getSelectedItem());
 					
+					if(mainApp.getBotanicalPark().getZone(nameZone).addTypeAlert(mainApp.getBotanicalPark().getTypeAlert(idTypeAlert))){
+						ZoneTypeAlert zoneTypeAlert = new ZoneTypeAlert(nameZone, idTypeAlert);
+						
+						tableViewTypeAlertsInZone.getItems().add(zoneTypeAlert);
+						
+						validateTypeAlertInZoneButton.setStyle("-fx-text-fill: green");
+					}
+					else{
+						validateTypeAlertInZoneButton.setStyle("-fx-text-fill: red");
+					}
+				}
+				else{
+					validateTypeAlertInZoneButton.setStyle("-fx-text-fill: red");
+					
+				}
 			}
 		});
 		
@@ -829,48 +875,31 @@ public class ConfigurationController implements Initializable{
 
 			@Override
 			public void handle(MouseEvent event) {
-				System.out.println("deleted");
+				if(tableViewTypeAlertsInZone.getSelectionModel().getSelectedItem() != null){
+					ZoneTypeAlert zTypeAlert = tableViewTypeAlertsInZone.getSelectionModel().getSelectedItem();
+					
+					if(mainApp.getBotanicalPark().getZone(zTypeAlert.getNameZone()).removeTypeAlert(mainApp.getBotanicalPark().getTypeAlert(zTypeAlert.getIdTypeAlert()))){
+						tableViewTypeAlertsInZone.getItems().remove(zTypeAlert);
+						deletedtypeAlertInZoneButton.setStyle("-fx-text-fill: green");						
+					}
+					else{
+						deletedtypeAlertInZoneButton.setStyle("-fx-text-fill: red");
+					}
+				}
 			}
 		});
 		
 		
 		
-		//TODO : A FAIRE Coté TypeAlert Zone
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-
 		tableViewTypeAlerts.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TypeAlert>() {
 
 			@Override
 			public void changed(ObservableValue<? extends TypeAlert> observable, TypeAlert oldValue,
 					TypeAlert newValue) {
 								
-				selectedIndexTableViewTypeAlert = tableViewTypeAlerts.getSelectionModel().getSelectedIndex();
-
+				deletedtypeAlertButton.setStyle("-fx-text-fill: black");
+				validateTypeAlertButton.setStyle("-fx-text-fill: black");
+				
 				if(isInsertionTypeAlert()){
 					deletedtypeAlertButton.setVisible(false);
 					validateTypeAlertButton.setText("Ajouter");
@@ -894,9 +923,29 @@ public class ConfigurationController implements Initializable{
 						superiorCheckBox.setSelected(false);
 						inferiorCheckBox.setSelected(true);						
 					}
-					
+					choiceBoxSensor.getSelectionModel().select(tableViewTypeAlerts.getSelectionModel().getSelectedItem().getNameSensor());
 					messageAlertTextField.setText(newValue.getMessage());
 				}
+			}
+		});
+		
+		tableViewTypeAlertsInZone.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ZoneTypeAlert>() {
+
+			@Override
+			public void changed(ObservableValue<? extends ZoneTypeAlert> observable, ZoneTypeAlert oldValue,
+					ZoneTypeAlert newValue) {
+								
+				if(newValue != null){
+					if(newValue.getNameZone().equals("ajout") && newValue.getIdTypeAlert() == -1){
+						validateTypeAlertInZoneButton.setVisible(true);
+						deletedtypeAlertInZoneButton.setVisible(false);	
+					}
+					else{
+						validateTypeAlertInZoneButton.setVisible(false);
+						deletedtypeAlertInZoneButton.setVisible(true);	
+					}
+				}
+				
 			}
 		});
 		
@@ -925,18 +974,33 @@ public class ConfigurationController implements Initializable{
 			@Override
 			public void handle(MouseEvent arg0) {
 				if(inputTypeAlertIsValid()){
+					String message = messageAlertTextField.getText();
+					String nameSensor = choiceBoxSensor.getSelectionModel().getSelectedItem();
+					boolean isSuperior = superiorCheckBox.isSelected();
+					
 					if(isInsertionTypeAlert()){
-						String nameZone = choiceBoxZonesTypeAlert.getSelectionModel().getSelectedItem();
-						String message = messageAlertTextField.getText();
-						String nameSensor = choiceBoxSensor.getSelectionModel().getSelectedItem();
-						boolean isSuperior = superiorCheckBox.isSelected();
-						
 						TypeAlert t = new TypeAlert(0, message, nameSensor, isSuperior);
-						
+						if(mainApp.getBotanicalPark().addTypeAlert(t)){
+							tableViewTypeAlerts.getItems().add(t);
+							updateChoiceTypeAlertForZone();
+							validateTypeAlertButton.setStyle("-fx-text-fill: green");
+						}
+						else{
+							validateTypeAlertButton.setStyle("-fx-text-fill: red");
+						}
 					}
 					else{
-						
+						TypeAlert selected = tableViewTypeAlerts.getSelectionModel().getSelectedItem();
+						if(selected.updateAll(selected.getIdTypeAlert(), message, nameSensor, isSuperior)){
+							validateTypeAlertButton.setStyle("-fx-text-fill: green");
+						}
+						else{
+							validateTypeAlertButton.setStyle("-fx-text-fill: red");
+						}
 					}
+				}
+				else{
+					validateTypeAlertButton.setStyle("-fx-text-fill: red");
 				}
 			}
 		});		
@@ -946,7 +1010,28 @@ public class ConfigurationController implements Initializable{
 			@Override
 			public void handle(MouseEvent arg0) {
 				if(tableViewTypeAlerts.getSelectionModel().getSelectedItem() != null){
+					TypeAlert typeAlert = tableViewTypeAlerts.getSelectionModel().getSelectedItem();
+					mainApp.getBotanicalPark().removeTypeAlert(typeAlert);
+					tableViewTypeAlerts.getItems().remove(typeAlert);
 					
+					
+					List<ZoneTypeAlert> listInteger = new ArrayList<>();
+					
+					for(int i = 0 ; i < tableViewTypeAlertsInZone.getItems().size() ; i++){
+						ZoneTypeAlert zTypeAlert = tableViewTypeAlertsInZone.getItems().get(i);
+						if(zTypeAlert.getIdTypeAlert() == typeAlert.getIdTypeAlert()){
+							listInteger.add(zTypeAlert);
+						}
+					}
+					
+					for(ZoneTypeAlert zTypeAlert : listInteger){
+						tableViewTypeAlertsInZone.getItems().remove(zTypeAlert);
+					}
+					
+					validateTypeAlertButton.setStyle("-fx-text-fill: green");
+				}
+				else{
+					deletedtypeAlertButton.setStyle("-fx-text-fill: red");
 				}
 			}
 		});		
@@ -967,6 +1052,9 @@ public class ConfigurationController implements Initializable{
 						addAllRpInChoiceBox();
 						addAllVegetalInChoiceBox();
 					}
+					else if(newValue.getText().equals("Type d'alerte")){
+						initDataTypeAlert();
+					}
 				}
 			}
 		});
@@ -983,11 +1071,37 @@ public class ConfigurationController implements Initializable{
 		choiceBoxRPZone.getItems().addAll(mainApp.getBotanicalPark().getListSringRP());
 	}
 	
-	private void addAllInformationForTypeAlert(){
+	private void addAllInformationForTypeAlertInZone(){
 		choiceBoxZonesTypeAlert.getItems().clear();
-		choiceBoxSensor.getItems().clear();
+		
 		choiceBoxZonesTypeAlert.getItems().addAll(mainApp.getBotanicalPark().getListSringZones());
+		
+		List<ZoneTypeAlert> zoneTypeAlert = new ArrayList<>();
+		
+		for(Zone zone : mainApp.getBotanicalPark().getZones()){
+			for(TypeAlert typeAlert : zone.getTypeAlerts()){
+				zoneTypeAlert.add(new ZoneTypeAlert(zone.getName(), typeAlert.getIdTypeAlert()));
+			}
+		}
+		
+		choiceBoxSensorForZone.getItems().clear();
+		choiceBoxSensorForZone.getItems().addAll(mainApp.getBotanicalPark().getListSringSensor());	
+		
+		tableViewTypeAlertsInZone.getItems().clear();
+		tableViewTypeAlertsInZone.getItems().add(new ZoneTypeAlert("ajout", -1));
+		tableViewTypeAlertsInZone.getItems().addAll(zoneTypeAlert);
+		
+	}
+	
+	private void addAllInformationForTypeAlert(){
+	
+		choiceBoxSensor.getItems().clear();
+		tableViewTypeAlerts.getItems().clear();
+		
 		choiceBoxSensor.getItems().addAll(mainApp.getBotanicalPark().getListSringSensor());
+		
+		tableViewTypeAlerts.getItems().add(new TypeAlert(-1, "ajout", "ajout", false));
+		tableViewTypeAlerts.getItems().addAll(mainApp.getBotanicalPark().getTypesAlert());
 	}
 	
 	private void addAllVegetalInChoiceBox(){
@@ -1006,15 +1120,10 @@ public class ConfigurationController implements Initializable{
 		addAllRpInChoiceBox();
 		addAllVegetalInChoiceBox();
 	}
-	
-	private void initDataTypeAlertZone(){
-		tableViewTypeAlertsInZone.getItems().add(new ZoneTypeAlert("ajout", -1));
-		choiceBoxSensorForZone.getItems().addAll(mainApp.getBotanicalPark().getListSringSensor());
-	}
-	
+		
 	private void initDataTypeAlert(){
-		tableViewTypeAlerts.getItems().add(new TypeAlert(0, "ajout", "ajout", false));
 		addAllInformationForTypeAlert();
+		addAllInformationForTypeAlertInZone();
 	}
 	
 	private void initDataListRP(){
@@ -1046,6 +1155,5 @@ public class ConfigurationController implements Initializable{
 		initDataListZones();
 		initDataListRP();
 		initDataTypeAlert();
-		initDataTypeAlertZone();
 	}
 }

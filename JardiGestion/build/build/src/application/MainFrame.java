@@ -2,8 +2,10 @@ package application;
 
 	
 
+import controller.javafx.ConfigurationController;
 import controller.javafx.HomeController;
 import controller.javafx.MenuBarController;
+import controller.javafx.ZonesAnalyseController;
 import controller.javafx.ZonesManagementController;
 import controller.sql.Connexion;
 import controller.sql.GeneratorTable;
@@ -27,14 +29,20 @@ public class MainFrame extends Application {
 	private Stage primaryStage;
     private BorderPane rootLayout;
     private BotanicalPark parc;
+    
 	private MenuBarController menuBarController;
     private HomeController homeController;
     private ZonesManagementController zonesManagementController;
+    private ZonesAnalyseController zonesAnalyseController;
+    private ConfigurationController configurationController;
+    
+    
+    private Queries queriessql;
     
 	public void initMainFrame(){
 		try {
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainFrame.class.getResource("../view/fxml/MainFrame.fxml"));
+			loader.setLocation(MainFrame.class.getResource("/view/fxml/MainFrame.fxml"));
 			rootLayout = (BorderPane) loader.load();
 			
 			Scene scene = new Scene(rootLayout);
@@ -49,7 +57,7 @@ public class MainFrame extends Application {
 		try{
 			FXMLLoader loader = new FXMLLoader();
 			
-			loader.setLocation(MainFrame.class.getResource("../view/fxml/Home.fxml"));
+			loader.setLocation(MainFrame.class.getResource("/view/fxml/Home.fxml"));
 			
 			AnchorPane homePanel = (AnchorPane) loader.load();
 			homeController = loader.getController();
@@ -64,7 +72,7 @@ public class MainFrame extends Application {
 	public void showMenuBar(){
 		try{
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainFrame.class.getResource("../view/fxml/MenuBar.fxml"));
+			loader.setLocation(MainFrame.class.getResource("/view/fxml/MenuBar.fxml"));
 			
 			MenuBar menuBar = (MenuBar) loader.load();
 			
@@ -80,7 +88,7 @@ public class MainFrame extends Application {
 	public void showZonesManagementController(){
 		try{
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainFrame.class.getResource("../view/fxml/ZonesManagement.fxml"));
+			loader.setLocation(MainFrame.class.getResource("/view/fxml/ZonesManagement.fxml"));
 			
 			TabPane tabPane = (TabPane) loader.load();
 			
@@ -93,37 +101,77 @@ public class MainFrame extends Application {
 			}
 			
 			rootLayout.setCenter(tabPane);
-			
 		} catch(Exception e){
 			e.printStackTrace();
 		}		
 	}
 	
 	public void showAnalyse(){
-		
+		try{
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(MainFrame.class.getResource("/view/fxml/ZonesAnalyse.fxml"));
+			
+			TabPane tabPane = (TabPane) loader.load();
+			
+			zonesAnalyseController = loader.getController();
+			zonesAnalyseController.setMainApp(this);
+			
+			for(int i = 0 ; i < parc.getZones().size() ; i++){
+				Zone zone = parc.getZones().get(i);
+				zonesAnalyseController.addPane(zone);
+			}
+			
+			rootLayout.setCenter(tabPane);
+		} catch(Exception e){
+			e.printStackTrace();
+		}		
 	}
+	
+	public void showConfiguration(){
+		try{
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(MainFrame.class.getResource("/view/fxml/Configuration.fxml"));
+			
+			TabPane tabPane = (TabPane) loader.load();
+			
+			configurationController = loader.getController();
+			configurationController.setMainApp(this);
+			
+			rootLayout.setCenter(tabPane);
+		} catch(Exception e){
+			e.printStackTrace();
+		}		
+	}
+	
 	
 	public ZonesManagementController getZonesManagement(){
 		return zonesManagementController;
+	}
+	
+	public ZonesAnalyseController getZonesAnalyse(){
+		return zonesAnalyseController;
 	}
 	
 	public BotanicalPark getBotanicalPark(){
 		return parc;
 	}
 	
+	public Queries getQueries(){
+		return queriessql;
+	}
+	
 	@Override
 	public void start(Stage primaryStage) {
 		Connexion connexion = new Connexion();
-		Queries queries = new Queries(connexion);
+		queriessql = new Queries(connexion);
 		GeneratorTable.generate(connexion);
-		InitialisationDB initDB = new InitialisationDB(connexion);
 		ReaderSqlData reader = new ReaderSqlData(connexion);
-		initDB.execute();
 		parc = reader.readAllData();
 		
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("JardiGestion");
 		this.primaryStage.getIcons().add(new Image("file:data/image/icon.jpg"));
+		this.primaryStage.setResizable(false);
 		initMainFrame();
 		showMenuBar();
 		showHome();

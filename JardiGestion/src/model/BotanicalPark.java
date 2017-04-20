@@ -14,6 +14,7 @@ public class BotanicalPark {
 	private List<ResponsiblePerson> responsiblePersons;
 	private List<Sensor> sensors;
 	private Map<VegetableSpecie, List<Vegetable>> vegetables;
+	private	List<TypeAlert> typesAlert;
 	private Queries queriesSql;
 	
 	
@@ -23,6 +24,7 @@ public class BotanicalPark {
 		this.zones = new ArrayList<>();
 		this.vegetables = new HashMap<>();
 		this.responsiblePersons = new ArrayList<>();		
+		this.typesAlert = new ArrayList<>();
 	}
 	
 	public List<Zone> getZones() {
@@ -243,11 +245,22 @@ public class BotanicalPark {
 		this.responsiblePersons.add(rp);
 	}
 	
+	public void initTypeAlert(TypeAlert typeAlert){
+		typesAlert.add(typeAlert);
+		typeAlert.setQueries(queriesSql);
+	}
+	
 	public boolean removeResponsiblePersons(String email){
 		for(ResponsiblePerson rp : responsiblePersons)
 			if(rp.getEmail().equals(email)){
 				responsiblePersons.remove(rp);
-				return queriesSql.deleteResponsiblePerson(email);
+				
+				if(queriesSql.deleteResponsiblePerson(email)){
+					
+					for(Zone z : zones) z.removeResponsiblePerson(email);
+					
+					return true;
+				}
 			}
 		
 		return false;
@@ -260,7 +273,6 @@ public class BotanicalPark {
 		if(queriesSql.deleteVegetable(vegetable)){
 			for(Zone z : zones) z.removeVegetable(vegetable);
 			vegetables.get(vegetable.getSpecie()).remove(vegetable);
-			
 			return true;
 		}
 		
@@ -287,6 +299,63 @@ public class BotanicalPark {
 			if(rp.getEmail().equals(email)) return rp;
 		
 		return null;
+	}
+	
+	public boolean addTypeAlert(TypeAlert typeAlert){
+		boolean result = queriesSql.addTypeAlert(typeAlert.getMessage(), typeAlert.getNameSensor(), typeAlert.getIsSuperior());
+	
+		if(result){
+			typesAlert.add(typeAlert);
+			typeAlert.setId(queriesSql.getIdTypeAlert(typeAlert));
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean removeTypeAlert(TypeAlert typeAlert){
+		if(typesAlert.contains(typeAlert)){
+			boolean result = queriesSql.deletedTypeAlert(typeAlert);
+			
+			if(result){
+				typesAlert.remove(typeAlert);
+				
+				for(Zone zone : zones){
+					zone.removeTypeAlertWithoutSQL(typeAlert);
+				}
+				
+				return true;
+			}
+			
+		}
+		
+		return false;
+	}
+	
+	public List<String> getListTypeAlertFromSensor(String nameSensor){
+		List<String> list = new ArrayList<>();
+		
+		for(TypeAlert typeA : typesAlert){
+			if(typeA.getNameSensor().equals(nameSensor)){
+				list.add("" + typeA.getIdTypeAlert());
+			}
+		}
+		
+		return list;
+	}
+	
+	public TypeAlert getTypeAlert(int idTypeAlert){
+		for(TypeAlert typeA : typesAlert){
+			if(typeA.getIdTypeAlert() == idTypeAlert){
+				return typeA;
+			}
+		}
+		
+		return null;
+	}
+	
+	public List<TypeAlert> getTypesAlert(){
+		return typesAlert;
 	}
 	
 	

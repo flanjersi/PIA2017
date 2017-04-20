@@ -12,11 +12,13 @@ import java.sql.Statement;
 import com.sun.glass.ui.GestureSupport;
 
 public class Connexion {
-	private String dbPath = "data/dataBase/database.db";
+	private String dbPath = "resource/database.db";
+	private String dbPathExternalJar = "database.db";
 	private Connection connexion = null;
 	private Statement statement = null;
 	
 	public Connexion(String dbPath){
+		//Pas mis a jour
 		this.dbPath = dbPath;
 		
 			
@@ -24,6 +26,7 @@ public class Connexion {
 			File database = new File(dbPath);
 			
 			if(!database.exists()){
+				database.mkdirs();
 				BufferedWriter writer = new BufferedWriter(new FileWriter(database));
 				writer.close();
 			}
@@ -37,6 +40,17 @@ public class Connexion {
 			File database = new File(dbPath);
 			
 			if(!database.exists()){
+				String[] tabSplit = dbPath.split("/");
+				
+				String dbDir = "";
+				
+				for(int i = 0 ; i < tabSplit.length - 1; i++){
+					dbDir += tabSplit[i];
+				}
+				
+				File dir = new File(dbDir);
+				dir.mkdirs();
+				
 				BufferedWriter writer = new BufferedWriter(new FileWriter(database));
 				writer.close();
 			}
@@ -48,9 +62,11 @@ public class Connexion {
 	public synchronized void connect(){
 		try {
             Class.forName("org.sqlite.JDBC");
+            //connexion = DriverManager.getConnection("jdbc:sqlite::resource" + dbPathExternalJar);
             connexion = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
             statement = connexion.createStatement();
-            System.out.println("Connexion a " + dbPath + " avec succès");
+            statement.execute("PRAGMA foreign_keys = ON");
+//            System.out.println("Connexion a " + dbPath + " avec succès");
         } catch (ClassNotFoundException notFoundException) {
             //notFoundException.printStackTrace();
             System.out.println("Erreur de connexion");
@@ -63,8 +79,7 @@ public class Connexion {
 	public synchronized void close() {
         try {
             connexion.close();
-            statement.closeOnCompletion();
-            System.out.println("Fermeture de la base de donnée " + dbPath + " reussi");
+//            System.out.println("Fermeture de la base de donnée " + dbPath + " reussi");
         } catch (SQLException e) {
             e.printStackTrace();
         }

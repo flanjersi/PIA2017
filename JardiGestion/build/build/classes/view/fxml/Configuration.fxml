@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="690.0" prefWidth="1280.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.javafx.ConfigurationController">
+   <tabs>
+      <Tab text="Zones">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <ListView fx:id="listZones" layoutX="22.0" layoutY="75.0" prefHeight="551.0" prefWidth="200.0" />
+                  <Label layoutX="247.0" layoutY="80.0" text="Nom" underline="true" />
+                  <Label layoutX="245.0" layoutY="111.0" text="Description" underline="true" />
+                  <TextField fx:id="nameZoneField" layoutX="332.0" layoutY="75.0" prefHeight="26.0" prefWidth="199.0" />
+                  <TextArea fx:id="descriptionZoneTextField" layoutX="332.0" layoutY="119.0" prefHeight="200.0" prefWidth="200.0" />
+                  <Button fx:id="zoneValidateButton" layoutX="467.0" layoutY="345.0" mnemonicParsing="false" text="Valider" />
+                  <Button fx:id="zoneDeletedButton" layoutX="362.0" layoutY="345.0" mnemonicParsing="false" text="Supprimer" />
+                  <Label fx:id="infoUpdate" alignment="CENTER_RIGHT" layoutX="235.0" layoutY="390.0" prefHeight="16.0" prefWidth="299.0" />
+                  <ChoiceBox fx:id="choiceBoxVegetalZone" layoutX="574.0" layoutY="79.0" prefHeight="26.0" prefWidth="200.0" />
+                  <ListView fx:id="listVegetalZone" layoutX="574.0" layoutY="140.0" prefHeight="179.0" prefWidth="200.0" />
+                  <Button fx:id="zoneVegetableValidateButton" layoutX="577.0" layoutY="345.0" mnemonicParsing="false" text="Ajouter" />
+                  <Button fx:id="zoneVegetableDeletedButton" layoutX="688.0" layoutY="345.0" mnemonicParsing="false" text="Supprimer" />
+                  <Label layoutX="610.0" layoutY="55.0" text="Vegetaux du parc : " underline="true" />
+                  <ChoiceBox fx:id="choiceBoxRPZone" layoutX="900.0" layoutY="79.0" prefHeight="26.0" prefWidth="302.0" />
+                  <ListView fx:id="listRPZone" layoutX="900.0" layoutY="140.0" prefHeight="179.0" prefWidth="300.0" />
+                  <Label layoutX="905.0" layoutY="55.0" text="Email des Personnes responsables du parc : " underline="true" />
+                  <Label layoutX="600.0" layoutY="115.0" text="Vegetaux de la zone : " underline="true" />
+                  <Label layoutX="930.0" layoutY="115.0" text="Personnes responsables de la zone : " underline="true" />
+                  <Button fx:id="zoneRPValidateButton" layoutX="952.0" layoutY="345.0" mnemonicParsing="false" text="Ajouter" />
+                  <Button fx:id="zoneRPDeletedButton" layoutX="1061.0" layoutY="345.0" mnemonicParsing="false" text="Supprimer" />
+               </children>
+            </AnchorPane>
+        </content>
+      </Tab>
+      <Tab text="Personnes responsable">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <Label layoutX="31.0" layoutY="134.0" text="Nom" underline="true" />
+                  <Label layoutX="31.0" layoutY="170.0" text="Prénom:" underline="true" />
+                  <TextField fx:id="nameResponsiblePerson" layoutX="103.0" layoutY="129.0" prefHeight="26.0" prefWidth="199.0" />
+                  <TextField fx:id="firstNameResponsiblePerson" layoutX="103.0" layoutY="165.0" prefHeight="26.0" prefWidth="199.0" />
+                  <TextField fx:id="emailResponsiblePerson" layoutX="103.0" layoutY="205.0" prefHeight="26.0" prefWidth="199.0" />
+                  <Button fx:id="validateResponsiblePersonButton" layoutX="250.0" layoutY="251.0" mnemonicParsing="false" text="Ajout" />
+                  <Button fx:id="deletedResponsiblePersonButton" layoutX="137.0" layoutY="251.0" mnemonicParsing="false" text="Supprimer" />
+                  <TableView fx:id="listResponsiblePerson" layoutX="31.0" layoutY="404.0" prefHeight="200.0" prefWidth="1228.0">
+                    <columns>
+                      <TableColumn fx:id="listNameResponsiblePerson" prefWidth="410.0" text="Nom" />
+                      <TableColumn fx:id="listFirstNameResponsiblePerson" prefWidth="389.0" text="Prénom" />
+                        <TableColumn fx:id="listEmailResponsiblePerson" prefWidth="428.0" text="Email" />
+                    </columns>
+                  </TableView>
+                  <Label layoutX="31.0" layoutY="210.0" text="Email" underline="true" />
+                  <Label fx:id="infoUpdateRP" alignment="CENTER_RIGHT" layoutX="36.0" layoutY="298.0" prefHeight="16.0" prefWidth="266.0" />
+               </children>
+            </AnchorPane>
+        </content>
+      </Tab>
+      <Tab text="Végétaux">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <TableView fx:id="tableViewVegetables" layoutX="653.0" layoutY="371.0" prefHeight="286.0" prefWidth="592.0">
+                    <columns>
+                      <TableColumn fx:id="tableColumnNameVegetables" prefWidth="182.0" text="Nom" />
+                      <TableColumn fx:id="tableColumnNameSpecieVegetables" prefWidth="221.0" text="Espèce" />
+                        <TableColumn fx:id="tableColumnDescriptionVegetables" prefWidth="188.0" text="Description" />
+                    </columns>
+                  </TableView>
+                  <TableView fx:id="tableViewVegetablesSpecies" layoutX="14.0" layoutY="369.0" prefHeight="289.0" prefWidth="628.0">
+                    <columns>
+                      <TableColumn fx:id="tableColumnNameVegetablesSpecies" prefWidth="300.0" text="Nom" />
+                      <TableColumn fx:id="tableColumnDescriptionVegetablesSpecies" prefWidth="327.0" text="Description" />
+                    </columns>
+                  </TableView>
+                  <Label layoutX="32.0" layoutY="113.0" text="Nom espece vegetal:" underline="true" />
+                  <Label layoutX="32.0" layoutY="141.0" text="Description espece vegetal:" underline="true" />
+                  <Label layoutX="657.0" layoutY="113.0" text="Nom vegetal:" underline="true" />
+                  <Label layoutX="657.0" layoutY="141.0" text="Description vegetal:" underline="true" />
+                  <TextField fx:id="nameVegetableSpecie" layoutX="225.0" layoutY="108.0" prefHeight="26.0" prefWidth="261.0" />
+                  <TextArea fx:id="descriptionVegetableSpecie" layoutX="225.0" layoutY="141.0" prefHeight="118.0" prefWidth="261.0" />
+                  <Button fx:id="validateVegetableSpecies" layoutX="388.0" layoutY="279.0" mnemonicParsing="false" text="Modification" />
+                  <Button fx:id="deletedVegetableSpecies" layoutX="292.0" layoutY="279.0" mnemonicParsing="false" text="Supprimer" />
+                  <TextField fx:id="nameVegetable" layoutX="857.0" layoutY="108.0" prefHeight="26.0" prefWidth="260.0" />
+                  <TextArea fx:id="descriptionVegetable" layoutX="857.0" layoutY="141.0" prefHeight="118.0" prefWidth="261.0" />
+                  <ChoiceBox fx:id="choiceBoxSpecies" layoutX="653.0" layoutY="224.0" prefWidth="150.0" />
+                  <Label layoutX="653.0" layoutY="192.0" text="Espèce :" underline="true" />
+                  <Label layoutX="240.0" layoutY="341.0" text="Espèces vegetales" underline="true">
+                     <font>
+                        <Font size="19.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="904.0" layoutY="341.0" text="Végétaux" underline="true">
+                     <font>
+                        <Font size="19.0" />
+                     </font>
+                  </Label>
+                  <Button fx:id="validateVegetable" layoutX="1019.0" layoutY="279.0" mnemonicParsing="false" text="Modification" />
+                  <Button fx:id="deletedVegetable" layoutX="917.0" layoutY="279.0" mnemonicParsing="false" text="Supprimer" />
+               </children>
+            </AnchorPane>
+        </content>
+      </Tab>
+      <Tab text="Type d'alerte">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <TableView fx:id="tableViewTypeAlertsInZone" layoutX="8.0" layoutY="429.0" prefHeight="200.0" prefWidth="455.0">
+                    <columns>
+                      <TableColumn fx:id="tableColumnNameZoneTypeAlert" minWidth="0.0" prefWidth="206.0" text="Nom zone" />
+                      <TableColumn fx:id="tableColumnIdTypeAlertZone" prefWidth="248.0" text="Identification type alerte" />
+                    </columns>
+                  </TableView>
+                  <ChoiceBox fx:id="choiceBoxZonesTypeAlert" layoutX="214.0" layoutY="66.0" prefWidth="150.0" />
+                  <ChoiceBox fx:id="choiceBoxSensorForZone" layoutX="214.0" layoutY="105.0" prefWidth="150.0" />
+                  <ChoiceBox fx:id="choiceBoxIdTypeAlerts" layoutX="214.0" layoutY="146.0" prefWidth="150.0" />
+                  <Label layoutX="30.0" layoutY="72.0" text="Zone :" underline="true" />
+                  <Label layoutX="30.0" layoutY="111.0" text="Capteur :" underline="true" />
+                  <Button fx:id="deletedtypeAlertInZoneButton" layoutX="268.0" layoutY="380.0" mnemonicParsing="false" text="Supprimer" />
+                  <Button fx:id="validateTypeAlertInZoneButton" layoutX="363.0" layoutY="380.0" mnemonicParsing="false" text="Modification" />
+                  <TableView fx:id="tableViewTypeAlerts" layoutX="470.0" layoutY="429.0" prefHeight="200.0" prefWidth="796.0">
+                     <columns>
+                        <TableColumn fx:id="tableColumnIdTypeAlert" prefWidth="166.0" text="Id type Alerte" />
+                        <TableColumn fx:id="tableColumnSensorTypeAlert" minWidth="0.0" prefWidth="182.0" text="Capteur" />
+                        <TableColumn fx:id="tableColumnCondAlert" minWidth="0.0" prefWidth="189.0" text="Condition alerte" />
+                        <TableColumn fx:id="tableColumnMessageAlert" prefWidth="258.0" text="Message d'alerte" />
+                     </columns>
+                  </TableView>
+                  <ChoiceBox fx:id="choiceBoxSensor" layoutX="601.0" layoutY="66.0" prefWidth="150.0" />
+                  <CheckBox fx:id="superiorCheckBox" layoutX="601.0" layoutY="109.0" mnemonicParsing="false" text="Supérieur" />
+                  <CheckBox fx:id="inferiorCheckBox" layoutX="707.0" layoutY="109.0" mnemonicParsing="false" text="Inférieur" />
+                  <TextArea fx:id="messageAlertTextField" layoutX="601.0" layoutY="151.0" prefHeight="200.0" prefWidth="200.0" />
+                  <Button fx:id="deletedtypeAlertButton" layoutX="611.0" layoutY="380.0" mnemonicParsing="false" text="Supprimer" />
+                  <Button fx:id="validateTypeAlertButton" layoutX="706.0" layoutY="380.0" mnemonicParsing="false" text="Modification" />
+                  <Label layoutX="470.0" layoutY="110.0" text="Condition d'alerte :" underline="true" />
+                  <Label layoutX="470.0" layoutY="71.0" text="Capteur :" underline="true" />
+                  <Label layoutX="470.0" layoutY="151.0" text="Message d'alerte :" underline="true" />
+                  <Label layoutX="30.0" layoutY="152.0" text="Identification Type alerte: " underline="true" />
+               </children>
+            </AnchorPane>
+        </content>
+      </Tab>
+   </tabs>
+</TabPane>

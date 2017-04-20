@@ -26,6 +26,7 @@ public class ZonesManagementController implements Initializable{
 	
 	private MainFrame mainApp;
 	private List<ZoneManagementController> listZoneManagementController;
+	private ZoneManagementController controller;
 	private Map<String, Integer> mappedTab;
 	
 	int selectedZone = 0;
@@ -40,6 +41,7 @@ public class ZonesManagementController implements Initializable{
 			@Override
 			public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
 				selectedZone = getIndexZone(newValue.getText());
+				controller = listZoneManagementController.get(selectedZone);
 			}
 		});
 	}
@@ -50,7 +52,7 @@ public class ZonesManagementController implements Initializable{
 			loader.setLocation(MainFrame.class.getResource("../view/fxml/ZoneManagement.fxml"));
 			AnchorPane zoneManagement = (AnchorPane) loader.load();
 			
-			ZoneManagementController controller = loader.getController();
+			controller = loader.getController();
 			controller.setMainApp(mainApp);
 			listZoneManagementController.add(controller);
 			mappedTab.put(zone.getName(), listZoneManagementController.size() - 1);
@@ -64,6 +66,7 @@ public class ZonesManagementController implements Initializable{
 			e.printStackTrace();
 		}
 	}
+	
 
 	public void setMainApp(MainFrame mainApp){
 		this.mainApp = mainApp;
@@ -79,6 +82,10 @@ public class ZonesManagementController implements Initializable{
 	
 	public int getSelectedIndexZone(){
 		return selectedZone;
+	}
+	
+	public ZoneManagementController getSelectedController(){
+		return listZoneManagementController.get(getSelectedIndexZone());
 	}
 	
 	

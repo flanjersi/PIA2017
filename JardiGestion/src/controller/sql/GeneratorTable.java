@@ -11,9 +11,9 @@ public class GeneratorTable {
 			connexion.getStatement().execute(TableDeclaration.VEGETAUX);
 			connexion.getStatement().execute(TableDeclaration.ZONE);
 			connexion.getStatement().execute(TableDeclaration.CONTIENT_VEGETAUX);
-			connexion.getStatement().execute(TableDeclaration.CAPTEUR);
-			connexion.getStatement().execute(TableDeclaration.DONNEE_CAPTEUR_ATTENDU);
-			connexion.getStatement().execute(TableDeclaration.DONNEE_CAPTEUR_RECU);
+			connexion.getStatement().execute(TableDeclaration.SONDE);
+			connexion.getStatement().execute(TableDeclaration.RELEVE_PERIODIQUE_ATTENDU);
+			connexion.getStatement().execute(TableDeclaration.RELEVE_PERIODIQUE_RECU);
 			connexion.getStatement().execute(TableDeclaration.TYPE_ALERTE);
 			connexion.getStatement().execute(TableDeclaration.ALERTE);
 			connexion.getStatement().execute(TableDeclaration.PERSONNE_RESPONSABLE);

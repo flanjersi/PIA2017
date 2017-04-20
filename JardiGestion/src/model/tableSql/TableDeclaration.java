@@ -7,9 +7,9 @@ public class TableDeclaration {
 					  + "description_zone text NOT NULL\n"
 					  + ");";
 	
-	static final public String CAPTEUR = "CREATE TABLE IF NOT EXISTS CAPTEUR(\n"
-			+ "id_capteur  integer PRIMARY KEY AUTOINCREMENT,\n"
-	        + "nom_capteur texte UNIQUE NOT NULL\n"
+	static final public String SONDE = "CREATE TABLE IF NOT EXISTS SONDE(\n"
+			+ "id_sonde  integer PRIMARY KEY AUTOINCREMENT,\n"
+	        + "nom_sonde texte UNIQUE NOT NULL\n"
 			+ ");";
 	
 	static final public String ALERTE = "CREATE TABLE IF NOT EXISTS ALERTE(\n"
@@ -24,14 +24,12 @@ public class TableDeclaration {
 	
 	static final public String TYPE_ALERTE = "CREATE TABLE IF NOT EXISTS TYPE_ALERTE(\n"
 			+ "id_type_alerte integer PRIMARY KEY AUTOINCREMENT,\n"
-			+ "id_capteur integer NOT NULL,\n"
-			+ "id_zone integer NOT NULL,\n"
-			+ "est_donnee_superieur integer NOT NULL,\n"
+			+ "id_sonde integer NOT NULL,\n"
+			+ "est_releve_superieur integer NOT NULL,\n"
 	        + "description_type_alerte TEXT NOT NULL,\n"
-	        + "FOREIGN KEY (id_capteur) REFERENCES CAPTEUR(id_capteur) ON DELETE CASCADE,\n"
-  	        + "FOREIGN KEY (id_zone) REFERENCES ZONE(id_zone) ON DELETE CASCADE,\n"
-  	        + "CONSTRAINT unicite_type_alerte UNIQUE (id_zone, id_capteur)\n"
-	        + ")\n";
+        	+ "CONSTRAINT unicite_type_alerte UNIQUE (est_releve_superieur, description_type_alerte, id_sonde),\n"
+	        + "FOREIGN KEY (id_sonde) REFERENCES sonde(id_sonde) ON DELETE CASCADE\n"
+  	        + ")\n";
 
 	static final public String PERSONNE_RESPONSABLE = "CREATE TABLE IF NOT EXISTS PERSONNE_RESPONSABLE(\n"
 			+ "id_personne     integer PRIMARY KEY AUTOINCREMENT,\n"
@@ -40,25 +38,25 @@ public class TableDeclaration {
 			+ "nom_personne    texte NOT NULL\n"
 			+ ");";
 	
-	static final public String DONNEE_CAPTEUR_RECU = "CREATE TABLE IF NOT EXISTS DONNEE_CAPTEUR(\n"
-			+ "id_donnee   integer PRIMARY KEY AUTOINCREMENT,\n"
-			+ "donnee      integer NOT NULL ,\n"
-			+ "date_donnee Date ,\n"
+	static final public String RELEVE_PERIODIQUE_RECU = "CREATE TABLE IF NOT EXISTS RELEVE_PERIODIQUE_RECU(\n"
+			+ "id_releve   integer PRIMARY KEY AUTOINCREMENT,\n"
+			+ "releve      integer NOT NULL ,\n"
+			+ "date_releve Date ,\n"
 			+ "id_zone          integer NOT NULL ,\n"
-			+ "id_capteur       integer NOT NULL ,\n"
-			+ "FOREIGN KEY (id_capteur) REFERENCES CAPTEUR(id_capteur) ON DELETE CASCADE,\n"
+			+ "id_sonde       integer NOT NULL ,\n"
+			+ "FOREIGN KEY (id_sonde) REFERENCES SONDE(id_sonde) ON DELETE CASCADE,\n"
   	        + "FOREIGN KEY (id_zone) REFERENCES ZONE(id_zone) ON DELETE CASCADE\n"
 			+ ");";	
 	
-	static final public String DONNEE_CAPTEUR_ATTENDU = "CREATE TABLE IF NOT EXISTS DONNEE_CAPTEUR_ATTENDU(\n"
-			+ "id_donnee_attendu   integer PRIMARY KEY AUTOINCREMENT,\n"
-        	+ "donnee_attendu      integer NOT NULL ,\n"
-        	+ "date_donnee_attendu Date ,\n"
+	static final public String RELEVE_PERIODIQUE_ATTENDU = "CREATE TABLE IF NOT EXISTS RELEVE_PERIODIQUE_ATTENDU(\n"
+			+ "id_releve_attendu   integer PRIMARY KEY AUTOINCREMENT,\n"
+        	+ "releve_attendu      integer NOT NULL ,\n"
+        	+ "date_releve_attendu Date ,\n"
         	+ "marge               integer NOT NULL ,\n"
         	+ "id_zone             integer NOT NULL ,\n"
-        	+ "id_capteur          integer NOT NULL ,\n"
-        	+ "CONSTRAINT unicite_temps UNIQUE (date_donnee_attendu, id_zone, id_capteur),\n"
-        	+ "FOREIGN KEY (id_capteur) REFERENCES CAPTEUR(id_capteur) ON DELETE CASCADE,\n"
+        	+ "id_sonde          integer NOT NULL ,\n"
+        	+ "CONSTRAINT unicite_temps UNIQUE (date_releve_attendu, id_zone, id_sonde),\n"
+        	+ "FOREIGN KEY (id_sonde) REFERENCES SONDE(id_sonde) ON DELETE CASCADE,\n"
   	        + "FOREIGN KEY (id_zone) REFERENCES ZONE(id_zone) ON DELETE CASCADE\n"
         	+ ");";
 	

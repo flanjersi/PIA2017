@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
@@ -8,29 +9,43 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.javafx.HomeController">
+<AnchorPane stylesheets="@home.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.javafx.HomeController">
    <children>
       <Pane prefHeight="690.0" prefWidth="1280.0">
          <children>
             <ImageView fitHeight="690.0" fitWidth="1280.0">
                <image>
-                  <Image url="@../../../data/image/couverture.jpg" />
+                  <Image url="@../../../resource/image/couverture.jpg" />
                </image>
             </ImageView>
-            <Button fx:id="buttonGestion" layoutX="894.0" layoutY="469.0" mnemonicParsing="false" prefHeight="58.0" prefWidth="177.0" text="Gestion">
+            <Button fx:id="buttonGestion" layoutX="894.0" layoutY="469.0" mnemonicParsing="false" prefHeight="58.0" prefWidth="177.0" styleClass="buttonHome" text="Gestion">
                <font>
                   <Font name="DejaVu Sans Bold" size="25.0" />
                </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
             </Button>
             <Label alignment="CENTER" ellipsisString="" layoutX="299.0" layoutY="107.0" prefHeight="250.0" prefWidth="683.0" text="JARDI GESTION" textAlignment="CENTER" textFill="RED" textOverrun="WORD_ELLIPSIS" underline="true">
                <font>
                   <Font size="85.0" />
                </font>
             </Label>
-            <Button fx:id="buttonAnalyse" layoutX="211.0" layoutY="469.0" mnemonicParsing="false" prefHeight="58.0" prefWidth="177.0" text="Analyse">
+            <Button fx:id="buttonAnalyse" layoutX="211.0" layoutY="469.0" mnemonicParsing="false" prefHeight="58.0" prefWidth="177.0" styleClass="buttonHome" text="Analyse">
                <font>
                   <Font name="DejaVu Sans Bold" size="25.0" />
                </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
+            <Button fx:id="buttonConfiguration" layoutX="523.0" layoutY="565.0" mnemonicParsing="false" prefHeight="58.0" prefWidth="234.0" styleClass="buttonHome" text="Configuration">
+               <font>
+                  <Font name="DejaVu Sans Bold" size="25.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
             </Button>
          </children>
       </Pane>

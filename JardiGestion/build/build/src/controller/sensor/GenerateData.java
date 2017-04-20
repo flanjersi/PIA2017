@@ -10,21 +10,21 @@ public class GenerateData implements Runnable{
 	
 	private int flexibility;
 	private int nbrData;
-	private int idZone;
+	private String nomZone;
 	private int idSensor;
 	private int baseData;
 	private int secondsInterval;
 	private Queries queries;
 	
 	public GenerateData(Queries queries, 
-			int idZone, int idSensor, int flexibility, 
+			String nomZone, int idSensor, int flexibility, 
 			int nbrData, int baseData, int secondsInterval){
 		this.queries = queries;
 		this.flexibility = flexibility;
 		this.nbrData = nbrData;
 		this.baseData = baseData;
 		this.secondsInterval = secondsInterval;
-		this.idZone = idZone;
+		this.nomZone = nomZone;
 		this.idSensor = idSensor;
 	}
 	
@@ -40,7 +40,7 @@ public class GenerateData implements Runnable{
 		try {
 			for(int i = 0 ; i < nbrData ; i++){
 				data = generateData();
-				queries.addDataSensorReceive(idZone, data, new Date().getTime(), idSensor);
+				queries.addDataSensorReceive(nomZone, data, new Date().getTime(), idSensor);
 				Thread.sleep(secondsInterval * 1000);
 			}
 		} catch (InterruptedException e) {

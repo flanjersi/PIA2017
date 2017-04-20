@@ -95,6 +95,7 @@
 		<fx:application id="fxApplication"
 			name="JardiGestion"
 			mainClass="application.MainFrame"
+			toolkit="fx"
 		/>
 	
 		<mkdir dir="build/classes/META-INF" />
@@ -124,7 +125,7 @@
 			includeDT="false"
 			offlineAllowed="true"
 			outdir="${basedir}/deploy"
-			outfile="JardiGestion" nativeBundles="none"
+			outfile="JardiGestion" nativeBundles="all"
 			updatemode="background" >
 	
 			<fx:platform basedir="${java.home}"/>

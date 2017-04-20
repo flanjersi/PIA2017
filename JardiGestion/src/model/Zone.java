@@ -7,10 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
-
-import com.sun.xml.internal.bind.v2.model.core.ID;
-
-import controller.sql.Connexion;
 import controller.sql.Queries;
 
 public class Zone {
@@ -130,6 +126,17 @@ public class Zone {
 		this.responsiblesPersons = rps;
 	}
 	
+	public boolean removeResponsiblePerson(String email){
+		for(ResponsiblePerson rp : responsiblesPersons){
+			if(rp.getEmail().equals(email)){
+				responsiblesPersons.remove(rp);
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	public void removeAllResponsiblePerson(){
 		responsiblesPersons.clear();
 		queries.deleteAllResponsiblePersonInZone(name);
@@ -245,14 +252,54 @@ public class Zone {
 		return list;
 	}
 	
-	public boolean addTypeAlert(TypeAlert typeAlert){
+	
+	private boolean typeAlertIsUnique(TypeAlert typeAlert){
 		
+		for(TypeAlert typeAlertInZone : typeAlerts){
+			if(typeAlertInZone.getNameSensor().equals(typeAlert.getNameSensor()) 
+			&& typeAlertInZone.getIsSuperior() == typeAlert.getIsSuperior())
+				return false;
+		}
+		
+		return true;
+	}
+	
+	public boolean addTypeAlert(TypeAlert typeAlert){
+		if(typeAlertIsUnique(typeAlert)){
+			
+			if(queries.addTypeAlertInZone(name, typeAlert)){
+				typeAlerts.add(typeAlert);
+				return true;
+			}
+		}
 		
 		return false;
 	}
 	
-	public boolean removeTypeAlert(){
-		
+	public boolean removeTypeAlertWithoutSQL(TypeAlert typeAlert){
+		if(typeAlerts.contains(typeAlert)){
+			typeAlerts.remove(typeAlert);
+			return true;
+		}
+		return false;		
+	}
+	
+	
+	public boolean addTypeAlertWithoutSQL(TypeAlert typeAlert){
+		if(typeAlertIsUnique(typeAlert)){
+			typeAlerts.add(typeAlert);
+			return true;
+		}
+		return false;	
+	}
+	
+	public boolean removeTypeAlert(TypeAlert typeAlert){
+		if(typeAlerts.contains(typeAlert)){
+			if(queries.deletedTypeAlertInZone(name, typeAlert)){
+				typeAlerts.remove(typeAlert);
+				return true;
+			}
+		}
 		return false;
 	}
 	

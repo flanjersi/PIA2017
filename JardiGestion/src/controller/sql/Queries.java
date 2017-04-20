@@ -1,8 +1,10 @@
 package controller.sql;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import model.ResponsiblePerson;
+import model.TypeAlert;
 import model.Vegetable;
 import model.VegetableSpecie;
 import model.Zone;
@@ -75,7 +77,7 @@ public class Queries {
 	
 	public synchronized boolean addSensor(String nameSensor){
 		String query = "INSERT INTO CAPTEUR"
-				+ "(nom_capteur) VALUES ('" + nameSensor + "')";
+				+ "(nom_sonde) VALUES ('" + nameSensor + "')";
 
 		try {
 			con.connect();
@@ -228,8 +230,8 @@ public class Queries {
 	
 	public synchronized boolean addDataSensorReceive(String nameZone, int donnee, double date, int idSensor){
 		String selectIdZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + nameZone + "'";
-		String query = "INSERT INTO DONNEE_CAPTEUR"
-				+ "(donnee_recu, date_donnee_recu, id_zone, id_capteur)"
+		String query = "INSERT INTO RELEVE_PERIODIQUE_RECU"
+				+ "(releve, date_releve_recu, id_zone, id_sonde)"
 				+ " VALUES (" + donnee + "," + date + ",(" + selectIdZone + ")," + idSensor + ")";
 
 		try {
@@ -247,8 +249,8 @@ public class Queries {
 	
 	public synchronized boolean addDataSensorExpected(String nameZone, int donnee, double date, int idSensor, int marge){
 		String selectIdZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + nameZone + "'";
-		String query = "INSERT INTO DONNEE_CAPTEUR_ATTENDU"
-				+ "(donnee_attendu, date_donnee_attendu, id_zone, id_capteur, marge)"
+		String query = "INSERT INTO RELEVE_PERIODIQUE_ATTENDU"
+				+ "(releve_attendu, date_releve_attendu, id_zone, id_sonde, marge)"
 				+ " VALUES (" + donnee + "," + date + ",(" + selectIdZone + ")," + idSensor + "," + marge + ")";
 		
 		try {
@@ -429,15 +431,66 @@ public class Queries {
 		}				
 	}	
 	
-	public synchronized boolean addTypeAlert(String message, String nameZone, String nameSensor, boolean est_donnee_superieure){
-		String querySensor = "SELECT id_capteur FROM CAPTEUR WHERE nom_capteur = '" + nameSensor + "'";
-		String queryIdZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + nameZone + "'";
+	public synchronized boolean addTypeAlert(String message, String nameSensor, boolean est_donnee_superieure){
+		String querySensor = "SELECT id_sonde FROM SONDE WHERE nom_sonde = '" + nameSensor + "'";
 		
-		String query = "INSERT INTO TYPE_ALERTE (description_type_alerte, est_donnee_superieur, id_capteur) VALUES ('"
-				+ message + "', " + est_donnee_superieure + " , (" + querySensor 
-				+ ")) WHERE NOT EXIST ( SELECT * FROM TYPE_ALERTE WHERE id_type_alerte IN ( SELECT id_type_alerte FROM TYPE_ALERTE_CORRESPONDRE_ZONE WHERE id_zone = (" + queryIdZone + ")))";
-
-		try {
+		String query = "INSERT INTO TYPE_ALERTE (description_type_alerte, est_releve_superieur , id_sonde) VALUES ('"
+				+ message + "', " + (est_donnee_superieure? 1 : 0) + ", (" + querySensor + "))";
+		
+		try{
+			con.connect();
+			con.getStatement().execute(query);
+			con.close();
+			
+			return true;
+		} catch (SQLException e) {
+			if(!e.getMessage().startsWith("[SQLITE_CONSTRAINT_UNIQUE]"))
+				e.printStackTrace();
+			
+			con.close();
+			
+			return false;
+		}		
+	}
+	
+	public synchronized int getIdTypeAlert(TypeAlert typeAlert){
+		String queryOldSensor = "SELECT id_sonde FROM SONDE WHERE nom_sonde = '" + typeAlert.getNameSensor() + "'";
+		
+		String queryFind = "SELECT id_type_alerte FROM TYPE_ALERTE WHERE id_sonde = (" + queryOldSensor + ") "
+				+ "AND est_releve_superieur = " + (typeAlert.getIsSuperior()? 1 : 0)
+				+ " AND description_type_alerte = '" + typeAlert.getMessage() + "'";
+		
+		try{
+			con.connect();
+			ResultSet result = con.getStatement().executeQuery(queryFind);
+			int idTypeAlert = Integer.valueOf(result.getString("id_type_alerte"));
+			con.close();
+			
+			return idTypeAlert;
+		} catch (SQLException e) {
+			if(!e.getMessage().startsWith("[SQLITE_CONSTRAINT_UNIQUE]"))
+				e.printStackTrace();
+			
+			con.close();
+			
+			return -1;
+		}				
+	}
+	
+	public synchronized boolean updateAllTypeAlert(TypeAlert old, String message, String nameSensor, boolean isSuperior){
+		String queryOldSensor = "SELECT id_sonde FROM SONDE WHERE nom_sonde = '" + old.getNameSensor() + "'";
+		String queryNewerSensor = "SELECT id_sonde FROM SONDE WHERE nom_sonde = '" + nameSensor + "'";
+		
+		String queryFind = "SELECT id_type_alerte FROM TYPE_ALERTE WHERE id_sonde = (" + queryOldSensor + ") "
+				+ "AND est_releve_superieur = " + (old.getIsSuperior()? 1 : 0)
+				+ " AND description_type_alerte = '" + old.getMessage() + "'";
+		
+		
+		String query = "UPDATE TYPE_ALERTE SET description_type_alerte = '" + message 
+				+ "' , est_releve_superieur = " + (isSuperior? 1 : 0) + ", id_sonde = (" + queryNewerSensor + ") "
+				+ "WHERE id_type_alerte = ("+ queryFind + ")";
+		
+		try{
 			con.connect();
 			con.getStatement().execute(query);
 			con.close();
@@ -451,14 +504,54 @@ public class Queries {
 		}		
 	}
 	
-	public synchronized boolean addTypeAlertInZone(String message, String nameZone, String nameSensor, boolean est_donnee_superieure){
+	public synchronized boolean deletedTypeAlert(TypeAlert typeAlert){
+		String querySensor = "SELECT id_sonde FROM SONDE WHERE nom_sonde = '" + typeAlert.getNameSensor() + "'";
+		
+		String query = "DELETE FROM TYPE_ALERTE WHERE est_releve_superieur = " + (typeAlert.getIsSuperior()? 1:0)
+				+ " AND description_type_alerte = '" + typeAlert.getMessage()
+				+ "' AND id_sonde = (" + querySensor + ")"; 
+	
+		try{
+			con.connect();
+			con.getStatement().execute(query);
+			con.close();
+			
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			con.close();
+			
+			return false;
+		}	
+	}
+	
+	public synchronized boolean deletedTypeAlertInZone(String nameZone, TypeAlert typeAlert){
+		String queryZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + nameZone + "'";
+		
+		String query = "DELETE FROM TYPE_ALERTE_CORRESPONDRE_ZONE WHERE id_zone = (" + queryZone
+				+ ") AND id_type_alerte = " + typeAlert.getIdTypeAlert();
+	
+		try{
+			con.connect();
+			con.getStatement().execute(query);
+			con.close();
+			
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			con.close();
+			
+			return false;
+		}	
+		
+	}
+	
+	public synchronized boolean addTypeAlertInZone(String nameZone, TypeAlert typeAlert){
 
-		String querySensor = "SELECT id_capteur FROM CAPTEUR WHERE nom_capteur = '" + nameSensor + "'";
 		String queryIdZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + nameZone + "'";
-		//String queryIdTypeAlert = "SELECT id_type_alerte FROM TYPE_ALERTE WHERE nameSensor"
 		String query = "INSERT INTO TYPE_ALERTE_CORRESPONDRE_ZONE (id_zone, id_type_alerte) VALUES (("
-				+ queryIdZone + "), (" + est_donnee_superieure + ")";
-
+				+ queryIdZone + "), " + typeAlert.getIdTypeAlert() + ")";
+		
 		try {
 			con.connect();
 			con.getStatement().execute(query);

@@ -1,6 +1,5 @@
 package model;
 
-import controller.sql.Connexion;
 import controller.sql.Queries;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -44,6 +43,10 @@ public class TypeAlert {
 		return idTypeAlert;
 	}
 	
+	public void setId(int id){
+		this.idTypeAlert.set(id);
+	}
+	
 	public StringProperty getMessageAlertProperty(){
 		return messageAlert;
 	}
@@ -56,11 +59,23 @@ public class TypeAlert {
 		return isSuperior;
 	}
 	
-	public void setQueries(Connexion connexion){
-		this.queries = new Queries(connexion);
+	public void setQueries(Queries q){
+		this.queries = q;
+	}
+	
+	public boolean updateAll(int id, String message, String nameSensor, boolean isSuperior){
+		if(queries.updateAllTypeAlert(this, message, nameSensor, isSuperior)){;
+			this.setId(id);
+			this.messageAlert.set(message);
+			this.nameSensor.set(nameSensor);
+			this.isSuperior.set(isSuperior);
+			return true;
+		}
+		
+		return false;
 	}
 	
 	public boolean equals(TypeAlert other){
-		return getNameSensor().equals(other.getNameSensor()) &&  (getIsSuperior() == other.getIsSuperior());
+		return getNameSensor().equals(other.getNameSensor()) &&  (getIsSuperior() == other.getIsSuperior()) && getMessage().equals(other.getMessage());
 	}
 }

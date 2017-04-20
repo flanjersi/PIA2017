@@ -34,7 +34,7 @@ public class ZoneAnalyseController implements Initializable{
 			int index;
 			
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainFrame.class.getResource("../view/fxml/ZoneSensorAnalyse.fxml"));
+			loader.setLocation(MainFrame.class.getResource("/view/fxml/ZoneSensorAnalyse.fxml"));
 			AnchorPane anchorPane = (AnchorPane) loader.load();
 			
 			zoneSensorAnalyseController = loader.getController();

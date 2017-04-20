@@ -12,11 +12,13 @@ import java.sql.Statement;
 import com.sun.glass.ui.GestureSupport;
 
 public class Connexion {
-	private String dbPath = "data/dataBase/database.db";
+	private String dbPath = "resource/database.db";
+	private String dbPathExternalJar = "database.db";
 	private Connection connexion = null;
 	private Statement statement = null;
 	
 	public Connexion(String dbPath){
+		//Pas mis a jour
 		this.dbPath = dbPath;
 		
 			
@@ -24,6 +26,7 @@ public class Connexion {
 			File database = new File(dbPath);
 			
 			if(!database.exists()){
+				database.mkdirs();
 				BufferedWriter writer = new BufferedWriter(new FileWriter(database));
 				writer.close();
 			}
@@ -37,6 +40,17 @@ public class Connexion {
 			File database = new File(dbPath);
 			
 			if(!database.exists()){
+				String[] tabSplit = dbPath.split("/");
+				
+				String dbDir = "";
+				
+				for(int i = 0 ; i < tabSplit.length - 1; i++){
+					dbDir += tabSplit[i];
+				}
+				
+				File dir = new File(dbDir);
+				dir.mkdirs();
+				
 				BufferedWriter writer = new BufferedWriter(new FileWriter(database));
 				writer.close();
 			}
@@ -48,6 +62,7 @@ public class Connexion {
 	public synchronized void connect(){
 		try {
             Class.forName("org.sqlite.JDBC");
+            //connexion = DriverManager.getConnection("jdbc:sqlite::resource" + dbPathExternalJar);
             connexion = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
             statement = connexion.createStatement();
             statement.execute("PRAGMA foreign_keys = ON");

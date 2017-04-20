@@ -2,7 +2,9 @@ package controller.javafx;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 
@@ -29,49 +31,97 @@ public class ZoneManagementController implements Initializable{
 	AnchorPane contentOfChoiceBox;
 	
 	private ZoneSensorManagementController zoneSensorManagementController;
+	private ZoneVegetableManagementController zoneVegetableManagementController;
+	
+	private Map<String, Integer> mappedChoice;
 	
 	private MainFrame mainApp;
 	
-	private int selectedItemChoiceBox = 0;
 	
-	private void showAnchorPaneSensor(String name, TreeMap<Integer, DataFromSensor> list){
+	private int showAnchorPaneSensor(int indexSensor, String name, TreeMap<Integer, DataFromSensor> list){
 		try {
+			int index;
+			
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(MainFrame.class.getResource("../view/fxml/ZoneSensorManagement.fxml"));
 			AnchorPane anchorPane = (AnchorPane) loader.load();
+			
 			zoneSensorManagementController = loader.getController();
+			
 			zoneSensorManagementController.setMainApp(mainApp);
 			zoneSensorManagementController.setListDataSensor(list);
-			zoneSensorManagementController.setNameDebug(name);
-			contentOfChoiceBox.getChildren().add(anchorPane);			
+			zoneSensorManagementController.setIndexSensor(indexSensor);
+			
+			
+			index = contentOfChoiceBox.getChildren().size();
+			mappedChoice.put(name, index);
+			
+			contentOfChoiceBox.getChildren().add(anchorPane);
+			
+			return index;
 		} catch (Exception e) {
 			e.printStackTrace();
+			return -1;
 		}
 	}
 	
-	private void showAnchorPaneVegetable(){
-		
+	
+	
+	private int showAnchorPaneVegetable(String name){
+		try {
+			int index;
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(MainFrame.class.getResource("../view/fxml/ZoneVegetableManagement.fxml"));
+			AnchorPane anchorPane = (AnchorPane) loader.load();
+			zoneVegetableManagementController = loader.getController();
+			zoneVegetableManagementController.setMainApp(mainApp);
+			index = contentOfChoiceBox.getChildren().size();
+			mappedChoice.put(name, index);
+			contentOfChoiceBox.getChildren().add(anchorPane);
+			return index;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return -1;
+		}
 	}
 	
 	private void addContentOfChoiceBox(int index){
 		if(index != 4 && index != 5){
 			String name = mainApp.getBotanicalPark().getSensors().get(index).getName();
 			int indexZone = mainApp.getZonesManagement().getSelectedIndexZone();
-			TreeMap<Integer, DataFromSensor> list = mainApp.getBotanicalPark().getZones().get(indexZone).getDataExpectedOfSensor(0); 
-			showAnchorPaneSensor(name, list);
-			contentOfChoiceBox.getChildren().get(index).setVisible(false);
+			
+			TreeMap<Integer, DataFromSensor> list = mainApp.getBotanicalPark().getZones().get(indexZone).getDataExpectedOfSensor(index);
+			int indexChildren = showAnchorPaneSensor(index, name, list);
+			contentOfChoiceBox.getChildren().get(indexChildren).setVisible(true);
 		}
 		else if(index == 5){
-			showAnchorPaneVegetable();
-			//contentOfChoiceBox.getChildren().get(index - 1).setVisible(false);
+			int indexChildren = showAnchorPaneVegetable("Vegétaux présent");
+			contentOfChoiceBox.getChildren().get(indexChildren).setVisible(true);
 		}
 	}
 	
 	private void chooseContentOfChoiceBox(int oldIndex, int newIndex){
-		if(oldIndex != -1 && newIndex != -1){
-			System.out.println((oldIndex == 5)? 3 : oldIndex);
-			contentOfChoiceBox.getChildren().get((oldIndex == 5)? 3 : oldIndex).setVisible(false);
-			contentOfChoiceBox.getChildren().get((newIndex == 5)? 3 : newIndex).setVisible(true);			
+		String name;
+		if(newIndex != -1){
+			if(mappedChoice.containsKey(choiceSensorOrVegetable.getItems().get(newIndex).toString())){
+				
+				if(oldIndex != -1){
+					name = choiceSensorOrVegetable.getItems().get(oldIndex).toString();
+					contentOfChoiceBox.getChildren().get(mappedChoice.get(name)).setVisible(false);
+						
+				}
+				
+				name = choiceSensorOrVegetable.getItems().get(newIndex).toString();
+				contentOfChoiceBox.getChildren().get(mappedChoice.get(name)).setVisible(true);
+			}
+			else{
+				addContentOfChoiceBox(newIndex);
+				
+				if(oldIndex != -1){
+					name = choiceSensorOrVegetable.getItems().get(oldIndex).toString();
+					contentOfChoiceBox.getChildren().get(mappedChoice.get(name)).setVisible(false);
+				}
+			}		
 		}
 	}
 	
@@ -79,6 +129,9 @@ public class ZoneManagementController implements Initializable{
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		
+		mappedChoice = new HashMap<>();
+		
 		
 		choiceSensorOrVegetable.setTooltip(new Tooltip("Selectionnez le capteur souhaitez"));
 		
@@ -93,18 +146,17 @@ public class ZoneManagementController implements Initializable{
 	
 	}
 	
+	
+	public String getNameChoice(){
+		return choiceSensorOrVegetable.getSelectionModel().getSelectedItem().toString();
+	}
+	
 	public void setMainApp(MainFrame mainApp){
 		this.mainApp = mainApp;
 		
 		choiceSensorOrVegetable.getItems().addAll(mainApp.getBotanicalPark().getListSringSensor());
 		choiceSensorOrVegetable.getItems().addAll(new Separator(), "Vegétaux présent");
-		choiceSensorOrVegetable.setValue(mainApp.getBotanicalPark().getListSringSensor().get(0));
-		addContentOfChoiceBox(0);
-		addContentOfChoiceBox(1);
-		addContentOfChoiceBox(2);
-		addContentOfChoiceBox(3);
-		addContentOfChoiceBox(5);
-		contentOfChoiceBox.getChildren().get(0).setVisible(true);
+		
 	}
 
 }

@@ -9,12 +9,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.activation.MailcapCommandMap;
+
 import com.sun.java.swing.plaf.windows.WindowsTreeUI.CollapsedIcon;
 
 import model.BotanicalPark;
 import model.DataFromSensor;
 import model.ResponsiblePerson;
 import model.Sensor;
+import model.TypeAlert;
 import model.Vegetable;
 import model.VegetableSpecie;
 import model.Zone;
@@ -37,6 +40,8 @@ public class ReaderSqlData {
 		readZones();
 		readDataExpected();
 		readResponsiblePeople();
+		readTypeAlert();
+		readTypeAlertZone();
 		System.out.println("FIN LECTURE BASE DE DONNEE");
 		return parc;
 	}
@@ -140,7 +145,7 @@ public class ReaderSqlData {
 	}
 	
 	public void readDataExpected(){
-		String query = "SELECT donnee_attendu, date_donnee_attendu, marge, id_zone, id_capteur FROM DONNEE_CAPTEUR_ATTENDU";
+		String query = "SELECT releve_attendu, date_releve_attendu, marge, id_zone, id_sonde FROM RELEVE_PERIODIQUE_ATTENDU";
 		
 		
 		List<Map<String, String>> results = executeQuerie(query);
@@ -149,9 +154,9 @@ public class ReaderSqlData {
 		
 		for(Map<String, String> result : results){			
 			idZone = Integer.valueOf(result.get("id_zone"));
-			idSensor = Integer.valueOf(result.get("id_capteur"));
-			data = Integer.valueOf(result.get("donnee_attendu"));
-			date = Integer.valueOf(result.get("date_donnee_attendu"));
+			idSensor = Integer.valueOf(result.get("id_sonde"));
+			data = Integer.valueOf(result.get("releve_attendu"));
+			date = Integer.valueOf(result.get("date_releve_attendu"));
 			margin = Integer.valueOf(result.get("marge"));
 			query = "SELECT nom_zone FROM ZONE WHERE id_zone = " + idZone;
 			
@@ -204,15 +209,67 @@ public class ReaderSqlData {
 			parc.initVegetable(v);
 		}			
 	}
+
+	public void readTypeAlert(){
+		String query = "SELECT id_type_alerte, id_sonde, description_type_alerte, est_releve_superieur FROM TYPE_ALERTE";
+
+		
+		List<Map<String, String>> results = executeQuerie(query);
+		
+		String description, nameSonde;
+		boolean estReleveSuperieur;
+		
+		int idSonde, idTypeAlert;
+		
+		for(Map<String, String> result : results){			
+			estReleveSuperieur = result.get("est_releve_superieur").equals("1") ? true : false;
+			description = result.get("description_type_alerte");
+			idSonde = Integer.valueOf(result.get("id_sonde"));
+			idTypeAlert = Integer.valueOf(result.get("id_type_alerte"));
+					
+					
+			query = "SELECT nom_sonde FROM SONDE WHERE id_sonde = " + idSonde;
+			
+			List<Map<String, String>> results2 = executeQuerie(query);
+				
+			nameSonde = results2.get(0).get("nom_sonde");
+			
+			TypeAlert typeAlert = new TypeAlert(idTypeAlert, description, nameSonde, estReleveSuperieur);
+			parc.initTypeAlert(typeAlert);
+		}			
+	}
+	
+	private void readTypeAlertZone(){
+		String query = "SELECT id_type_alerte, id_zone FROM TYPE_ALERTE_CORRESPONDRE_ZONE";
+		
+		
+		
+		List<Map<String, String>> results = executeQuerie(query);
+		
+		int idZone, idTypeAlert;
+		String nameZone;
+		
+		for(Map<String, String> result : results){			
+			idZone = Integer.valueOf(result.get("id_zone"));
+			idTypeAlert = Integer.valueOf(result.get("id_type_alerte"));
+			
+			String queryNameZone = "SELECT nom_zone FROM ZONE WHERE id_zone = " + idZone;
+						
+			List<Map<String, String>> results2 = executeQuerie(queryNameZone);
+				
+			nameZone = results2.get(0).get("nom_zone");
+			parc.getZone(nameZone).addTypeAlertWithoutSQL(parc.getTypeAlert(idTypeAlert));
+		}					
+	}
 	
 	public void readSensors(){
-		String query = "SELECT nom_capteur FROM CAPTEUR";
+		String query = "SELECT nom_sonde FROM SONDE";
 		
 		List<Map<String, String>> results = executeQuerie(query);
 		String nameCapteur;
 		
 		for(Map<String, String> result : results){			
-			nameCapteur = result.get("nom_capteur");
+			nameCapteur = result.get("nom_sonde");
 			parc.initSensor(new Sensor(nameCapteur));
 			
 		}		
@@ -236,13 +293,13 @@ public class ReaderSqlData {
 	}
 	
 	public void readDataReceiveSensor(){
-		String query = "SELECT nom_capteur FROM CAPTEUR";
+		String query = "SELECT nom_sonde FROM SONDE";
 		
 		List<Map<String, String>> results = executeQuerie(query);
 		String nameCapteur;
 		
 		for(Map<String, String> result : results){			
-			nameCapteur = result.get("nom_capteur");
+			nameCapteur = result.get("nom_sonde");
 			parc.initSensor(new Sensor(nameCapteur));
 		}				
 	}

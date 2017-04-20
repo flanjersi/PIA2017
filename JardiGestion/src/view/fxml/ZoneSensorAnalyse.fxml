@@ -9,7 +9,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1260.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.javafx.ZoneSensorAnalyseController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1260.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.javafx.ZoneSensorAnalyseController">
    <children>
       <DatePicker fx:id="datePickerBegin" layoutX="142.0" layoutY="14.0" promptText="Jour de début" />
       <DatePicker fx:id="datePickerLast" layoutX="142.0" layoutY="54.0" promptText="Jour de fin" />
