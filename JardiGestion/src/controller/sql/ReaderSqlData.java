@@ -39,6 +39,7 @@ public class ReaderSqlData {
 		readSensors();
 		readZones();
 		readDataExpected();
+		readDataReceive();
 		readResponsiblePeople();
 		readTypeAlert();
 		readTypeAlertZone();
@@ -150,7 +151,8 @@ public class ReaderSqlData {
 		
 		List<Map<String, String>> results = executeQuerie(query);
 		
-		int idZone, idSensor, data, date, margin;
+		int idZone, idSensor, data, margin;
+		long date;
 		
 		for(Map<String, String> result : results){			
 			idZone = Integer.valueOf(result.get("id_zone"));
@@ -165,6 +167,30 @@ public class ReaderSqlData {
 			DataFromSensor dataSensor = new DataFromSensor(data, date, margin);
 			
 			parc.getZone(results2.get(0).get("nom_zone")).addDataSensorExpected(idSensor - 1, dataSensor); 
+		}	
+	}
+	
+	public void readDataReceive(){
+		String query = "SELECT releve, date_releve, id_zone, id_sonde FROM RELEVE_PERIODIQUE_RECU";
+		
+		
+		List<Map<String, String>> results = executeQuerie(query);
+		
+		int idZone, idSensor, data; 
+		double date;
+		
+		for(Map<String, String> result : results){			
+			idZone = Integer.valueOf(result.get("id_zone"));
+			idSensor = Integer.valueOf(result.get("id_sonde"));
+			data = Integer.valueOf(result.get("releve"));
+			date = Double.valueOf(result.get("date_releve"));
+			query = "SELECT nom_zone FROM ZONE WHERE id_zone = " + idZone;
+			
+			List<Map<String, String>> results2 = executeQuerie(query);
+			
+			DataFromSensor dataSensor = new DataFromSensor(data, (int) date);
+			
+			parc.getZone(results2.get(0).get("nom_zone")).addDataSensorReceive(idSensor - 1, dataSensor);
 		}	
 	}
 	
@@ -268,11 +294,19 @@ public class ReaderSqlData {
 		List<Map<String, String>> results = executeQuerie(query);
 		String nameCapteur;
 		
+		boolean flag = false;
 		for(Map<String, String> result : results){			
 			nameCapteur = result.get("nom_sonde");
 			parc.initSensor(new Sensor(nameCapteur));
-			
+			flag = true;
 		}		
+		
+		if(flag == false){
+			parc.addSensor(new Sensor("temperature"));
+			parc.addSensor(new Sensor("humidite"));
+			parc.addSensor(new Sensor("luminosite"));
+			parc.addSensor(new Sensor("humidite-sol"));
+		}
 	}
 	
 	public void readResponsiblePeople(){

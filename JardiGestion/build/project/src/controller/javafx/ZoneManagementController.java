@@ -43,7 +43,7 @@ public class ZoneManagementController implements Initializable{
 			int index;
 			
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainFrame.class.getResource("../view/fxml/ZoneSensorManagement.fxml"));
+			loader.setLocation(MainFrame.class.getResource("/view/fxml/ZoneSensorManagement.fxml"));
 			AnchorPane anchorPane = (AnchorPane) loader.load();
 			
 			zoneSensorManagementController = loader.getController();
@@ -71,7 +71,7 @@ public class ZoneManagementController implements Initializable{
 		try {
 			int index;
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainFrame.class.getResource("../view/fxml/ZoneVegetableManagement.fxml"));
+			loader.setLocation(MainFrame.class.getResource("/view/fxml/ZoneVegetableManagement.fxml"));
 			AnchorPane anchorPane = (AnchorPane) loader.load();
 			zoneVegetableManagementController = loader.getController();
 			zoneVegetableManagementController.setMainApp(mainApp);

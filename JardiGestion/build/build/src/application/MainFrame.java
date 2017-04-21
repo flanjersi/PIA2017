@@ -170,7 +170,7 @@ public class MainFrame extends Application {
 		
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("JardiGestion");
-		this.primaryStage.getIcons().add(new Image("file:data/image/icon.jpg"));
+		this.primaryStage.getIcons().add(new Image("/resource/image/icon.jpg"));
 		this.primaryStage.setResizable(false);
 		initMainFrame();
 		showMenuBar();

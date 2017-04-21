@@ -66,7 +66,6 @@ public class Connexion {
             connexion = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
             statement = connexion.createStatement();
             statement.execute("PRAGMA foreign_keys = ON");
-//            System.out.println("Connexion a " + dbPath + " avec succès");
         } catch (ClassNotFoundException notFoundException) {
             //notFoundException.printStackTrace();
             System.out.println("Erreur de connexion");
@@ -79,7 +78,6 @@ public class Connexion {
 	public synchronized void close() {
         try {
             connexion.close();
-//            System.out.println("Fermeture de la base de donnée " + dbPath + " reussi");
         } catch (SQLException e) {
             e.printStackTrace();
         }

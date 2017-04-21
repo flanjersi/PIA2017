@@ -49,7 +49,7 @@ public class ZonesManagementController implements Initializable{
 	public void addPane(Zone zone){
 		try {
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainFrame.class.getResource("../view/fxml/ZoneManagement.fxml"));
+			loader.setLocation(MainFrame.class.getResource("/view/fxml/ZoneManagement.fxml"));
 			AnchorPane zoneManagement = (AnchorPane) loader.load();
 			
 			controller = loader.getController();

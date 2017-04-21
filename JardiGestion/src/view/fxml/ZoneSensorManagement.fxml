@@ -9,9 +9,8 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="600.0" prefWidth="1260.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.javafx.ZoneSensorManagementController">
+<AnchorPane prefHeight="600.0" prefWidth="1260.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.javafx.ZoneSensorManagementController">
    <children>
-      <Slider fx:id="sliderLineChart" blockIncrement="5.0" layoutX="40.0" layoutY="548.0" majorTickUnit="10.0" minorTickCount="2" prefHeight="16.0" prefWidth="1181.0" showTickLabels="true" showTickMarks="true" />
       <Label layoutX="361.0" layoutY="82.0" prefHeight="16.0" prefWidth="117.0" text="Heure de début :" underline="true" />
       <DatePicker fx:id="datePickerBegin" layoutX="131.0" layoutY="77.0" promptText="Jour de début" />
       <Label layoutX="14.0" layoutY="82.0" prefHeight="16.0" prefWidth="117.0" text="Jour de début :" underline="true" />
@@ -34,12 +33,9 @@
       <TextField fx:id="marginValue" layoutX="478.0" layoutY="159.0" prefHeight="26.0" prefWidth="73.0" promptText="Positive obligation" />
       <Button fx:id="validateButton" layoutX="572.0" layoutY="159.0" mnemonicParsing="false" text="Valider" />
       <LineChart fx:id="lineChartValues" layoutX="46.0" layoutY="212.0" prefHeight="317.0" prefWidth="1168.0">
-        <xAxis>
-          <NumberAxis side="BOTTOM" fx:id="xAxis" />
-        </xAxis>
-        <yAxis>
-          <NumberAxis fx:id="yAxis" side="LEFT" />
-        </yAxis>
+        <xAxis> <NumberAxis fx:id="xAxis"/> </xAxis>
+        <yAxis> <NumberAxis fx:id="yAxis"/> </yAxis>
       </LineChart>
+      <!-- <Slider fx:id="sliderLineChart" blockIncrement="5.0" layoutX="40.0" layoutY="529.0" majorTickUnit="5.0" minorTickCount="5" prefHeight="57.0" prefWidth="1181.0" showTickLabels="true" showTickMarks="true" value="50.0" /> -->
    </children>
 </AnchorPane>

@@ -125,7 +125,7 @@
 			includeDT="false"
 			offlineAllowed="true"
 			outdir="${basedir}/deploy"
-			outfile="JardiGestion" nativeBundles="all"
+			outfile="JardiGestion" nativeBundles="none"
 			updatemode="background" >
 	
 			<fx:platform basedir="${java.home}"/>

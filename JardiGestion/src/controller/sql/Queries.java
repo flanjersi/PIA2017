@@ -76,7 +76,7 @@ public class Queries {
 	
 	
 	public synchronized boolean addSensor(String nameSensor){
-		String query = "INSERT INTO CAPTEUR"
+		String query = "INSERT INTO SONDE"
 				+ "(nom_sonde) VALUES ('" + nameSensor + "')";
 
 		try {
@@ -231,7 +231,7 @@ public class Queries {
 	public synchronized boolean addDataSensorReceive(String nameZone, int donnee, double date, int idSensor){
 		String selectIdZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + nameZone + "'";
 		String query = "INSERT INTO RELEVE_PERIODIQUE_RECU"
-				+ "(releve, date_releve_recu, id_zone, id_sonde)"
+				+ "(releve, date_releve, id_zone, id_sonde)"
 				+ " VALUES (" + donnee + "," + date + ",(" + selectIdZone + ")," + idSensor + ")";
 
 		try {

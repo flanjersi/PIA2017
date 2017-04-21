@@ -50,7 +50,7 @@ public class ZonesAnalyseController implements Initializable{
 	public void addPane(Zone zone){
 		try {
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainFrame.class.getResource("../view/fxml/ZoneAnalyse.fxml"));
+			loader.setLocation(MainFrame.class.getResource("/view/fxml/ZoneAnalyse.fxml"));
 			AnchorPane zoneAnalyse = (AnchorPane) loader.load();
 			
 			controller = loader.getController();

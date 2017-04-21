@@ -29,7 +29,7 @@ public class ZoneAnalyseController implements Initializable{
 	private Map<String, Integer> mappedChoice;
 	private ZoneSensorAnalyseController zoneSensorAnalyseController;
 	
-	private int showAnchorPaneSensor(int indexSensor, String name, TreeMap<Integer, DataFromSensor> list){
+	private int showAnchorPaneSensor(int indexSensor, String name, TreeMap<Long, DataFromSensor> listExpected, TreeMap<Long, DataFromSensor> listReceive){
 		try {
 			int index;
 			
@@ -40,7 +40,9 @@ public class ZoneAnalyseController implements Initializable{
 			zoneSensorAnalyseController = loader.getController();
 			
 			zoneSensorAnalyseController.setMainApp(mainApp);
-			zoneSensorAnalyseController.setListDataSensor(list);
+			zoneSensorAnalyseController.setListDataSensorExpected(listExpected);
+			zoneSensorAnalyseController.setListDataSensorReceive(listReceive);
+			
 			zoneSensorAnalyseController.setIndexSensor(indexSensor);
 			
 			
@@ -62,8 +64,10 @@ public class ZoneAnalyseController implements Initializable{
 		String name = mainApp.getBotanicalPark().getSensors().get(index).getName();
 		int indexZone = mainApp.getZonesAnalyse().getSelectedIndexZone();
 		
-		TreeMap<Integer, DataFromSensor> list = mainApp.getBotanicalPark().getZones().get(indexZone).getDataExpectedOfSensor(index);
-		int indexChildren = showAnchorPaneSensor(index, name, list);
+		TreeMap<Long, DataFromSensor> listExpected = mainApp.getBotanicalPark().getZones().get(indexZone).getDataExpectedOfSensor(index);
+		TreeMap<Long, DataFromSensor> listReceive = mainApp.getBotanicalPark().getZones().get(indexZone).getDataReceiveOfSensor(index);
+		
+		int indexChildren = showAnchorPaneSensor(index, name, listExpected, listReceive);
 		contentOfChoiceBox.getChildren().get(indexChildren).setVisible(true);
 	
 	}

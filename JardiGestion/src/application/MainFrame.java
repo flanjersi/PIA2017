@@ -7,6 +7,7 @@ import controller.javafx.HomeController;
 import controller.javafx.MenuBarController;
 import controller.javafx.ZonesAnalyseController;
 import controller.javafx.ZonesManagementController;
+import controller.sensor.GenerateData;
 import controller.sql.Connexion;
 import controller.sql.GeneratorTable;
 import controller.sql.InitialisationDB;
@@ -170,7 +171,7 @@ public class MainFrame extends Application {
 		
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("JardiGestion");
-		this.primaryStage.getIcons().add(new Image("file:data/image/icon.jpg"));
+		this.primaryStage.getIcons().add(new Image("/resource/image/icon.jpg"));
 		this.primaryStage.setResizable(false);
 		initMainFrame();
 		showMenuBar();
@@ -180,15 +181,7 @@ public class MainFrame extends Application {
 	
 	public static void main(String[] args) {
 		launch(args);
-		
-		
-//		for(int i = 0 ; i < parc.getZones().size() ; i++){
-//			for(int j = 0 ; j < parc.getSensors().size(); j++){
-//				int intervals = (int) ((Math.random() * 60) + 1);
-//				Thread t = new Thread(new GenerateData(queries, i + 1, j + 1, 5, 10, 15, intervals));
-//				t.start();
-//			}
-//		}
-
+//		GenerateData data = new GenerateData(new Connexion(), 100);
+//		data.run();
 	}
 }
