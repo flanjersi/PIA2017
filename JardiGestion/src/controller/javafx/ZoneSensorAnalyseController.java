@@ -67,10 +67,6 @@ public class ZoneSensorAnalyseController implements Initializable{
 	Entry<Long, DataFromSensor> precEntryLower;
 	Entry<Long, DataFromSensor> precEntryUpper;
 	
-	Entry<Long, DataFromSensor> precEntryLowerExpected;
-	Entry<Long, DataFromSensor> precEntryUpperExpected;
-	
-	
 	private Pattern pattern;
 	private Matcher matcher;
 	
@@ -244,7 +240,6 @@ public class ZoneSensorAnalyseController implements Initializable{
 
 		Entry<Long, DataFromSensor> entryLower = listDataReceive.lowerEntry(lowerBound);
 		Entry<Long, DataFromSensor> entryUpper = listDataReceive.higherEntry(upperBound);
-		
 		Entry<Long, DataFromSensor> entryExpectedLower = listDataExpected.lowerEntry(lowerBound);
 		Entry<Long, DataFromSensor> entryExpectedUpper = listDataExpected.higherEntry(upperBound);
 		
@@ -252,100 +247,27 @@ public class ZoneSensorAnalyseController implements Initializable{
 		Set<Entry<Long, DataFromSensor>> setReceive = listDataReceive.subMap(lowerBound, upperBound).entrySet();
 
 		
-		if(!zoomOn){
-			
-			if(setReceive.size() > 0){
-				if(entryLower != null){
-					if(precEntryLower != null && entryLower.getKey() == precEntryLower.getKey())
-						entryLower = listDataReceive.lowerEntry(precEntryLower.getKey()) == null ? 
-								precEntryLower : listDataReceive.lowerEntry(precEntryLower.getKey());
-					
-					precEntryLower = entryLower;
-					valuesReceive.getData().add(new XYChart.Data<Long, Integer>((lowerBound / 3600), entryLower.getValue().getDonnee()));	
-				}
-				if(precEntryUpper != null && entryUpper != null){
-					if(entryUpper.getKey() == precEntryUpper.getKey())
-						entryUpper = listDataReceive.higherEntry(precEntryUpper.getKey()) == null ? 
-								precEntryUpper : listDataReceive.higherEntry(precEntryUpper.getKey());
-					
-					precEntryUpper = entryUpper;
-					valuesReceive.getData().add(new XYChart.Data<Long, Integer>((upperBound / 3600), entryUpper.getValue().getDonnee()));
-				}
+		if(set.size() > 0){
+			if(entryLower != null){
+				precEntryLower = entryLower;
+				valuesReceive.getData().add(new XYChart.Data<Long, Integer>((lowerBound / 3600), entryLower.getValue().getDonnee()));	
 			}
-			if(set.size() > 0){
-				if(entryExpectedLower != null){
-					if(precEntryLowerExpected != null && entryExpectedLower.getKey() == precEntryLowerExpected.getKey())
-						entryExpectedLower = listDataExpected.lowerEntry(precEntryLowerExpected.getKey()) == null ? 
-								precEntryLowerExpected : listDataExpected.lowerEntry(precEntryLowerExpected.getKey());
-					
-					precEntryLowerExpected = entryExpectedLower;
-					
-					valuesSeries.getData().add(new XYChart.Data<Long, Integer>((lowerBound / 3600), entryExpectedLower.getValue().getDonnee()));
-					marginPlusSeries.getData().add(new XYChart.Data<Long, Integer>((lowerBound / 3600), entryExpectedLower.getValue().getDonnee() + entryExpectedLower.getValue().getMarge()));
-					marginMinusSeries.getData().add(new XYChart.Data<Long, Integer>((lowerBound / 3600), entryExpectedLower.getValue().getDonnee() - entryExpectedLower.getValue().getMarge()));		
-				}
-				if(entryExpectedUpper != null){
-					if(precEntryUpperExpected != null && entryExpectedUpper.getKey() == precEntryUpperExpected.getKey())
-						entryExpectedUpper = listDataExpected.higherEntry(precEntryUpperExpected.getKey()) == null ? 
-								precEntryUpperExpected : listDataExpected.higherEntry(precEntryUpperExpected.getKey());
-					
-					precEntryUpperExpected = entryExpectedUpper;
-					
-					valuesSeries.getData().add(new XYChart.Data<Long, Integer>((upperBound / 3600), entryExpectedUpper.getValue().getDonnee()));
-					marginPlusSeries.getData().add(new XYChart.Data<Long, Integer>((upperBound / 3600), entryExpectedUpper.getValue().getDonnee() + entryExpectedLower.getValue().getMarge()));
-					marginMinusSeries.getData().add(new XYChart.Data<Long, Integer>((upperBound / 3600), entryExpectedUpper.getValue().getDonnee() - entryExpectedLower.getValue().getMarge()));	
-				}
+			if(entryUpper != null){
+				precEntryUpper = entryUpper;
+				valuesReceive.getData().add(new XYChart.Data<Long, Integer>((upperBound / 3600), entryUpper.getValue().getDonnee()));
 			}
-		}
-		else{
-			entryLower = listDataReceive.higherEntry(lowerBound);
-			entryUpper = listDataReceive.lowerEntry(upperBound);
-			entryExpectedLower = listDataExpected.higherEntry(lowerBound);
-			entryExpectedUpper = listDataExpected.lowerEntry(upperBound);
-			
-			set = listDataExpected.subMap(entryLower.getKey(), entryUpper.getKey()).entrySet();
-			if(setReceive.size() > 0){
-				if(entryLower != null){
-					if(precEntryLower != null && entryLower.getKey() == precEntryLower.getKey())
-						entryLower = listDataReceive.higherEntry(precEntryLower.getKey()) == null ? 
-								precEntryLower : listDataReceive.higherEntry(precEntryLower.getKey());
-					
-					precEntryLower = entryLower;
-					valuesReceive.getData().add(new XYChart.Data<Long, Integer>((lowerBound / 3600), entryLower.getValue().getDonnee()));	
-				}
-				if(precEntryUpper != null && entryUpper != null){
-					if(entryUpper.getKey() == precEntryUpper.getKey())
-						entryUpper = listDataReceive.lowerEntry(precEntryUpper.getKey()) == null ? 
-								precEntryUpper : listDataReceive.lowerEntry(precEntryUpper.getKey());
-					
-					precEntryUpper = entryUpper;
-					valuesReceive.getData().add(new XYChart.Data<Long, Integer>((upperBound / 3600), entryUpper.getValue().getDonnee()));
-				}
+		}	
+		if(set.size() > 0){
+			if(entryExpectedLower != null){
+				valuesSeries.getData().add(new XYChart.Data<Long, Integer>((lowerBound / 3600), entryExpectedLower.getValue().getDonnee()));
+				marginPlusSeries.getData().add(new XYChart.Data<Long, Integer>((lowerBound / 3600), entryExpectedLower.getValue().getDonnee() + entryExpectedLower.getValue().getMarge()));
+				marginMinusSeries.getData().add(new XYChart.Data<Long, Integer>((lowerBound / 3600), entryExpectedLower.getValue().getDonnee() - entryExpectedLower.getValue().getMarge()));		
 			}
-			if(set.size() > 0){
-				if(entryExpectedLower != null){
-					if(precEntryLowerExpected != null && entryExpectedLower.getKey() == precEntryLowerExpected.getKey())
-						entryExpectedLower = listDataExpected.higherEntry(precEntryLowerExpected.getKey()) == null ? 
-								precEntryLowerExpected : listDataExpected.higherEntry(precEntryLowerExpected.getKey());
-					
-					precEntryLowerExpected = entryExpectedLower;
-					
-					valuesSeries.getData().add(new XYChart.Data<Long, Integer>((lowerBound / 3600), entryExpectedLower.getValue().getDonnee()));
-					marginPlusSeries.getData().add(new XYChart.Data<Long, Integer>((lowerBound / 3600), entryExpectedLower.getValue().getDonnee() + entryExpectedLower.getValue().getMarge()));
-					marginMinusSeries.getData().add(new XYChart.Data<Long, Integer>((lowerBound / 3600), entryExpectedLower.getValue().getDonnee() - entryExpectedLower.getValue().getMarge()));		
-				}
-				if(entryExpectedUpper != null){
-					if(precEntryUpperExpected != null && entryExpectedUpper.getKey() == precEntryUpperExpected.getKey())
-						entryExpectedUpper = listDataExpected.lowerEntry(precEntryUpperExpected.getKey()) == null ? 
-								precEntryUpperExpected : listDataExpected.lowerEntry(precEntryUpperExpected.getKey());
-					
-					precEntryUpperExpected = entryExpectedUpper;
-					
-					valuesSeries.getData().add(new XYChart.Data<Long, Integer>((upperBound / 3600), entryExpectedUpper.getValue().getDonnee()));
-					marginPlusSeries.getData().add(new XYChart.Data<Long, Integer>((upperBound / 3600), entryExpectedUpper.getValue().getDonnee() + entryExpectedLower.getValue().getMarge()));
-					marginMinusSeries.getData().add(new XYChart.Data<Long, Integer>((upperBound / 3600), entryExpectedUpper.getValue().getDonnee() - entryExpectedLower.getValue().getMarge()));	
-				}
-			}
+			if(entryExpectedUpper != null){
+				valuesSeries.getData().add(new XYChart.Data<Long, Integer>((upperBound / 3600), entryExpectedUpper.getValue().getDonnee()));
+				marginPlusSeries.getData().add(new XYChart.Data<Long, Integer>((upperBound / 3600), entryExpectedUpper.getValue().getDonnee() + entryExpectedLower.getValue().getMarge()));
+				marginMinusSeries.getData().add(new XYChart.Data<Long, Integer>((upperBound / 3600), entryExpectedUpper.getValue().getDonnee() - entryExpectedLower.getValue().getMarge()));	
+			}			
 		}
 		
 	
