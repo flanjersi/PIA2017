@@ -293,7 +293,7 @@ public class ZoneSensorManagementController implements Initializable{
 	
 	public synchronized void eventAxis(long lowerBound, long upperBound){
 		lineChartValues.getXAxis().setLabel("Temps");
-		lineChartValues.getYAxis().setLabel("Valeur souhaité");
+		lineChartValues.getYAxis().setLabel("Valeurs souhaitée");
 		
 		XYChart.Series<Long, Integer> valuesSeries = new XYChart.Series<>();
 		XYChart.Series<Long, Integer> marginPlusSeries = new XYChart.Series<>();

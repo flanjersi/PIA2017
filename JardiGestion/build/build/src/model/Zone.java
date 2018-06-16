@@ -20,8 +20,8 @@ public class Zone {
 	private Map<VegetableSpecie, List<Vegetable>> vegetables;
 	private List<Sensor> sensors;
 	private List<ResponsiblePerson> responsiblesPersons;
-	private Map<Sensor, TreeMap<Integer, DataFromSensor>> datasReceive;
-	private Map<Sensor, TreeMap<Integer, DataFromSensor>> datasExpected;
+	private Map<Sensor, TreeMap<Long, DataFromSensor>> datasReceive;
+	private Map<Sensor, TreeMap<Long, DataFromSensor>> datasExpected;
 	
 	
 	private Queries queries;
@@ -54,9 +54,9 @@ public class Zone {
 	}
 	
 	private void initMapData(){
-		Comparator<Integer> comp = new Comparator<Integer>() {
+		Comparator<Long> comp = new Comparator<Long>() {
 			@Override
-			public int compare(Integer o1, Integer o2) {
+			public int compare(Long o1, Long o2) {
 				if(o1 < o2){
 					return -1;
 				}
@@ -77,13 +77,13 @@ public class Zone {
 	
 	
 	public boolean addDataSensorReceive(int idSensor, DataFromSensor data){
-		if((idSensor - 1 < 0) || (idSensor > sensors.size())){
+		if((idSensor < 0) || (idSensor >= sensors.size())){
 			System.out.println("Capteur inexistant, indice " + idSensor);
 			return false;
 		}
 
-		Sensor sensor = sensors.get(idSensor - 1);
-		TreeMap<Integer, DataFromSensor> datas = datasReceive.get(sensor);
+		Sensor sensor = sensors.get(idSensor);
+		TreeMap<Long, DataFromSensor> datas = datasReceive.get(sensor);
 		
 		if(datas.containsKey(data.getDateDonnee())){
 			datas.replace(data.getDateDonnee(), data);
@@ -102,7 +102,7 @@ public class Zone {
 		}
 		
 		Sensor sensor = sensors.get(idSensor);
-		TreeMap<Integer, DataFromSensor> datas = datasExpected.get(sensor);
+		TreeMap<Long, DataFromSensor> datas = datasExpected.get(sensor);
 		
 		if(datas.containsKey(data.getDateDonnee())){
 			datas.replace(data.getDateDonnee(), data);
@@ -208,8 +208,12 @@ public class Zone {
 		return description;
 	}
 	
-	public TreeMap<Integer, DataFromSensor> getDataExpectedOfSensor(int idSensor){
+	public TreeMap<Long, DataFromSensor> getDataExpectedOfSensor(int idSensor){
 		return datasExpected.get(sensors.get(idSensor));
+	}
+	
+	public TreeMap<Long, DataFromSensor> getDataReceiveOfSensor(int idSensor){
+		return datasReceive.get(sensors.get(idSensor));
 	}
 	
 	public int getIdZone(){

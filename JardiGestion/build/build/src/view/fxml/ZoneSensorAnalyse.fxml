@@ -36,6 +36,6 @@
           <NumberAxis fx:id="yAxis" side="LEFT" />
         </yAxis>
       </LineChart>
-      <Slider layoutX="42.0" layoutY="538.0" majorTickUnit="5.0" minorTickCount="1" prefHeight="38.0" prefWidth="1172.0" showTickLabels="true" showTickMarks="true" />
-   </children>
+<!--       <Slider layoutX="42.0" layoutY="538.0" majorTickUnit="5.0" minorTickCount="1" prefHeight="38.0" prefWidth="1172.0" showTickLabels="true" showTickMarks="true" />
+ -->   </children>
 </AnchorPane>

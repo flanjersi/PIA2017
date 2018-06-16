@@ -3,6 +3,7 @@ package controller.sensor;
 
 import java.util.Date;
 
+import controller.javafx.SetupController;
 import controller.sql.Connexion;
 import controller.sql.Queries;
 import controller.sql.ReaderSqlData;
@@ -24,7 +25,7 @@ public class GenerateData{
 		this.queries = new Queries(con);
 		this.nbrData = nbrData;
 		this.flexibility = 2;
-		this.parc = new ReaderSqlData(con).readAllData();
+		this.parc = new ReaderSqlData(con).readAllDataWithoutGUI();
 	}
 	
 	

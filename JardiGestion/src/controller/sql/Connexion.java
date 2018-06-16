@@ -62,7 +62,7 @@ public class Connexion {
 	public synchronized void connect(){
 		try {
             Class.forName("org.sqlite.JDBC");
-            //connexion = DriverManager.getConnection("jdbc:sqlite::resource" + dbPathExternalJar);
+            //connexion = DriverManager.getConnection("jdbc:sqlite::resource:" + dbPathExternalJar);
             connexion = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
             statement = connexion.createStatement();
             statement.execute("PRAGMA foreign_keys = ON");

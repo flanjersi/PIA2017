@@ -13,6 +13,7 @@ import javax.activation.MailcapCommandMap;
 
 import com.sun.java.swing.plaf.windows.WindowsTreeUI.CollapsedIcon;
 
+import controller.javafx.SetupController;
 import model.BotanicalPark;
 import model.DataFromSensor;
 import model.ResponsiblePerson;
@@ -26,14 +27,71 @@ public class ReaderSqlData {
 	
 	private Connexion con;
 	private BotanicalPark parc;
+	private SetupController setupController;
+	
+	
+	public ReaderSqlData(Connexion con, SetupController setupController){
+		this.con = con;
+		this.parc = new BotanicalPark(con);
+		this.setupController = setupController;
+	}
 	
 	public ReaderSqlData(Connexion con){
 		this.con = con;
 		this.parc = new BotanicalPark(con);
 	}
 	
+	public ReaderSqlData(Connexion con,SetupController setupController, BotanicalPark parc){
+		this.con = con;
+		this.parc = parc;
+		this.setupController = setupController;
+	}
+	
+	
 	public BotanicalPark readAllData(){
-		System.out.println("LECTURE BASE DE DONNEE");
+		setupController.setMessage("Lecture des espèces végetales");
+		readSpecies();
+		setupController.addProgress(0.1);
+		
+		setupController.setMessage("Lecture des végétaux");
+		readVegetables();
+		setupController.addProgress(0.1);
+		
+		setupController.setMessage("Lecture des sondes");
+		readSensors();
+		setupController.addProgress(0.1);
+		
+		setupController.setMessage("Lecture des zones");
+		readZones();
+		setupController.addProgress(0.1);
+		
+		setupController.setMessage("Lecture des données attendues");
+		readDataExpected();
+		setupController.addProgress(0.1);
+		
+		setupController.setMessage("Lecture des données reçu");
+		readDataReceive();
+		setupController.addProgress(0.1);
+		
+		setupController.setMessage("Lecture des personnes responsables");
+		readResponsiblePeople();
+		setupController.addProgress(0.1);
+		
+		setupController.setMessage("Lecture des types d'alertes");
+		readTypeAlert();
+		setupController.addProgress(0.1);
+		
+		setupController.setMessage("Lecture des types d'alertes des zones");
+		readTypeAlertZone();
+		setupController.addProgress(0.1);
+		
+		setupController.setMessage("Lancement du logiciel");
+		setupController.addProgress(0.1);
+		
+		return parc;
+	}
+	
+	public BotanicalPark readAllDataWithoutGUI(){
 		readSpecies();
 		readVegetables();
 		readSensors();
@@ -42,8 +100,8 @@ public class ReaderSqlData {
 		readDataReceive();
 		readResponsiblePeople();
 		readTypeAlert();
-		readTypeAlertZone();
-		System.out.println("FIN LECTURE BASE DE DONNEE");
+		readTypeAlertZone();	
+		
 		return parc;
 	}
 	

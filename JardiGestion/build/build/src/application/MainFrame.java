@@ -5,8 +5,10 @@ package application;
 import controller.javafx.ConfigurationController;
 import controller.javafx.HomeController;
 import controller.javafx.MenuBarController;
+import controller.javafx.SetupController;
 import controller.javafx.ZonesAnalyseController;
 import controller.javafx.ZonesManagementController;
+import controller.sensor.GenerateData;
 import controller.sql.Connexion;
 import controller.sql.GeneratorTable;
 import controller.sql.InitialisationDB;
@@ -27,7 +29,9 @@ import javafx.scene.layout.BorderPane;
 
 public class MainFrame extends Application {
 	private Stage primaryStage;
-    private BorderPane rootLayout;
+	private Stage setupStage;
+	
+	private BorderPane rootLayout;
     private BotanicalPark parc;
     
 	private MenuBarController menuBarController;
@@ -35,7 +39,7 @@ public class MainFrame extends Application {
     private ZonesManagementController zonesManagementController;
     private ZonesAnalyseController zonesAnalyseController;
     private ConfigurationController configurationController;
-    
+    private SetupController setupController;
     
     private Queries queriessql;
     
@@ -143,6 +147,27 @@ public class MainFrame extends Application {
 		}		
 	}
 	
+	public void showSetup(){
+		try{
+			setupStage = new Stage();
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(MainFrame.class.getResource("/view/fxml/Setup.fxml"));
+			
+			AnchorPane anchor = (AnchorPane) loader.load();
+			
+			setupController = loader.getController();
+			setupController.setMainApp(this);
+			
+			Scene scene = new Scene(anchor);
+			
+			setupStage.setScene(scene);
+			setupStage.show();
+			
+		} catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
 	
 	public ZonesManagementController getZonesManagement(){
 		return zonesManagementController;
@@ -161,34 +186,31 @@ public class MainFrame extends Application {
 	}
 	
 	@Override
-	public void start(Stage primaryStage) {
-		Connexion connexion = new Connexion();
-		queriessql = new Queries(connexion);
-		GeneratorTable.generate(connexion);
-		ReaderSqlData reader = new ReaderSqlData(connexion);
-		parc = reader.readAllData();
-		
+	public void start(Stage primaryStage) throws InterruptedException {
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("JardiGestion");
 		this.primaryStage.getIcons().add(new Image("/resource/image/icon.jpg"));
 		this.primaryStage.setResizable(false);
+		
 		initMainFrame();
 		showMenuBar();
 		showHome();
+		
+		//showSetup();
+		Connexion connexion = new Connexion();				
+		queriessql = new Queries(connexion);
+		GeneratorTable.generate(connexion);
+		ReaderSqlData reader = new ReaderSqlData(connexion);
+		parc = reader.readAllDataWithoutGUI();
+		//setupStage.close();
 	}
 	
 	
 	public static void main(String[] args) {
+		
+		
 		launch(args);
-		
-		
-//		for(int i = 0 ; i < parc.getZones().size() ; i++){
-//			for(int j = 0 ; j < parc.getSensors().size(); j++){
-//				int intervals = (int) ((Math.random() * 60) + 1);
-//				Thread t = new Thread(new GenerateData(queries, i + 1, j + 1, 5, 10, 15, intervals));
-//				t.start();
-//			}
-//		}
-
+		//GenerateData data = new GenerateData(new Connexion(), 1000);
+		//data.run();
 	}
 }

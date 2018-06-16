@@ -980,6 +980,8 @@ public class ConfigurationController implements Initializable{
 					
 					if(isInsertionTypeAlert()){
 						TypeAlert t = new TypeAlert(0, message, nameSensor, isSuperior);
+						t.setQueries(mainApp.getQueries());
+						
 						if(mainApp.getBotanicalPark().addTypeAlert(t)){
 							tableViewTypeAlerts.getItems().add(t);
 							updateChoiceTypeAlertForZone();
@@ -991,6 +993,7 @@ public class ConfigurationController implements Initializable{
 					}
 					else{
 						TypeAlert selected = tableViewTypeAlerts.getSelectionModel().getSelectedItem();
+						
 						if(selected.updateAll(selected.getIdTypeAlert(), message, nameSensor, isSuperior)){
 							validateTypeAlertButton.setStyle("-fx-text-fill: green");
 						}
@@ -1027,6 +1030,8 @@ public class ConfigurationController implements Initializable{
 					for(ZoneTypeAlert zTypeAlert : listInteger){
 						tableViewTypeAlertsInZone.getItems().remove(zTypeAlert);
 					}
+					
+					updateChoiceTypeAlertForZone();
 					
 					validateTypeAlertButton.setStyle("-fx-text-fill: green");
 				}
@@ -1144,7 +1149,6 @@ public class ConfigurationController implements Initializable{
 		choiceBoxSpecies.getItems().addAll(mainApp.getBotanicalPark().getVegetablesSpeciesString());
 		tableViewVegetables.getItems().add(new Vegetable("ajout", "ajout", new VegetableSpecie("ajout", "ajout")));
 		tableViewVegetables.getItems().addAll(mainApp.getBotanicalPark().getAllVegetable());
-		
 	}
 	
 	public void setMainApp(MainFrame mainApp){

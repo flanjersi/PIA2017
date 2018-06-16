@@ -13,6 +13,7 @@ import javax.activation.MailcapCommandMap;
 
 import com.sun.java.swing.plaf.windows.WindowsTreeUI.CollapsedIcon;
 
+import controller.javafx.SetupController;
 import model.BotanicalPark;
 import model.DataFromSensor;
 import model.ResponsiblePerson;
@@ -26,23 +27,81 @@ public class ReaderSqlData {
 	
 	private Connexion con;
 	private BotanicalPark parc;
+	private SetupController setupController;
+	
+	
+	public ReaderSqlData(Connexion con, SetupController setupController){
+		this.con = con;
+		this.parc = new BotanicalPark(con);
+		this.setupController = setupController;
+	}
 	
 	public ReaderSqlData(Connexion con){
 		this.con = con;
 		this.parc = new BotanicalPark(con);
 	}
 	
+	public ReaderSqlData(Connexion con,SetupController setupController, BotanicalPark parc){
+		this.con = con;
+		this.parc = parc;
+		this.setupController = setupController;
+	}
+	
+	
 	public BotanicalPark readAllData(){
-		System.out.println("LECTURE BASE DE DONNEE");
+		setupController.setMessage("Lecture des espèces végetales");
+		readSpecies();
+		setupController.addProgress(0.1);
+		
+		setupController.setMessage("Lecture des végétaux");
+		readVegetables();
+		setupController.addProgress(0.1);
+		
+		setupController.setMessage("Lecture des sondes");
+		readSensors();
+		setupController.addProgress(0.1);
+		
+		setupController.setMessage("Lecture des zones");
+		readZones();
+		setupController.addProgress(0.1);
+		
+		setupController.setMessage("Lecture des données attendues");
+		readDataExpected();
+		setupController.addProgress(0.1);
+		
+		setupController.setMessage("Lecture des données reçu");
+		readDataReceive();
+		setupController.addProgress(0.1);
+		
+		setupController.setMessage("Lecture des personnes responsables");
+		readResponsiblePeople();
+		setupController.addProgress(0.1);
+		
+		setupController.setMessage("Lecture des types d'alertes");
+		readTypeAlert();
+		setupController.addProgress(0.1);
+		
+		setupController.setMessage("Lecture des types d'alertes des zones");
+		readTypeAlertZone();
+		setupController.addProgress(0.1);
+		
+		setupController.setMessage("Lancement du logiciel");
+		setupController.addProgress(0.1);
+		
+		return parc;
+	}
+	
+	public BotanicalPark readAllDataWithoutGUI(){
 		readSpecies();
 		readVegetables();
 		readSensors();
 		readZones();
 		readDataExpected();
+		readDataReceive();
 		readResponsiblePeople();
 		readTypeAlert();
-		readTypeAlertZone();
-		System.out.println("FIN LECTURE BASE DE DONNEE");
+		readTypeAlertZone();	
+		
 		return parc;
 	}
 	
@@ -150,7 +209,8 @@ public class ReaderSqlData {
 		
 		List<Map<String, String>> results = executeQuerie(query);
 		
-		int idZone, idSensor, data, date, margin;
+		int idZone, idSensor, data, margin;
+		long date;
 		
 		for(Map<String, String> result : results){			
 			idZone = Integer.valueOf(result.get("id_zone"));
@@ -165,6 +225,30 @@ public class ReaderSqlData {
 			DataFromSensor dataSensor = new DataFromSensor(data, date, margin);
 			
 			parc.getZone(results2.get(0).get("nom_zone")).addDataSensorExpected(idSensor - 1, dataSensor); 
+		}	
+	}
+	
+	public void readDataReceive(){
+		String query = "SELECT releve, date_releve, id_zone, id_sonde FROM RELEVE_PERIODIQUE_RECU";
+		
+		
+		List<Map<String, String>> results = executeQuerie(query);
+		
+		int idZone, idSensor, data; 
+		double date;
+		
+		for(Map<String, String> result : results){			
+			idZone = Integer.valueOf(result.get("id_zone"));
+			idSensor = Integer.valueOf(result.get("id_sonde"));
+			data = Integer.valueOf(result.get("releve"));
+			date = Double.valueOf(result.get("date_releve"));
+			query = "SELECT nom_zone FROM ZONE WHERE id_zone = " + idZone;
+			
+			List<Map<String, String>> results2 = executeQuerie(query);
+			
+			DataFromSensor dataSensor = new DataFromSensor(data, (int) date);
+			
+			parc.getZone(results2.get(0).get("nom_zone")).addDataSensorReceive(idSensor - 1, dataSensor);
 		}	
 	}
 	
@@ -268,11 +352,19 @@ public class ReaderSqlData {
 		List<Map<String, String>> results = executeQuerie(query);
 		String nameCapteur;
 		
+		boolean flag = false;
 		for(Map<String, String> result : results){			
 			nameCapteur = result.get("nom_sonde");
 			parc.initSensor(new Sensor(nameCapteur));
-			
+			flag = true;
 		}		
+		
+		if(flag == false){
+			parc.addSensor(new Sensor("temperature"));
+			parc.addSensor(new Sensor("humidite"));
+			parc.addSensor(new Sensor("luminosite"));
+			parc.addSensor(new Sensor("humidite-sol"));
+		}
 	}
 	
 	public void readResponsiblePeople(){

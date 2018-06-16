@@ -17,9 +17,13 @@ public class Queries {
 		this.con = c;
 	}
 	
+	private String format(String name){
+		return name.replaceAll("'", "''");
+	}
+	
 	public synchronized boolean addZone(Zone zone){
 		String query = "INSERT INTO ZONE"
-				+ "(nom_zone, description_zone) VALUES ('" + zone.getName() + "','" + zone.getDescription() +"')";
+				+ "(nom_zone, description_zone) VALUES ('" + format(zone.getName()) + "','" + format(zone.getDescription()) +"')";
 		
 		
 		
@@ -44,8 +48,8 @@ public class Queries {
 	}
 	
 	public synchronized boolean updateZone(String oldName, String nameZone, String description){
-		String query = "UPDATE ZONE SET nom_zone = '" + nameZone + "', description_zone = '" + description
-				+ "' WHERE nom_zone = '" + oldName + "'"; 
+		String query = "UPDATE ZONE SET nom_zone = '" + format(nameZone) + "', description_zone = '" + format(description)
+				+ "' WHERE nom_zone = '" + format(oldName) + "'"; 
 
 		try {
 			con.connect();
@@ -60,7 +64,7 @@ public class Queries {
 	}
 	
 	public synchronized boolean deleteZone(String nameZone){
-		String query = "DELETE FROM ZONE WHERE nom_zone = '" + nameZone + "'"; 
+		String query = "DELETE FROM ZONE WHERE nom_zone = '" + format(nameZone) + "'"; 
 
 		try {
 			con.connect();
@@ -76,8 +80,8 @@ public class Queries {
 	
 	
 	public synchronized boolean addSensor(String nameSensor){
-		String query = "INSERT INTO CAPTEUR"
-				+ "(nom_sonde) VALUES ('" + nameSensor + "')";
+		String query = "INSERT INTO SONDE"
+				+ "(nom_sonde) VALUES ('" + format(nameSensor) + "')";
 
 		try {
 			con.connect();
@@ -115,7 +119,7 @@ public class Queries {
 	
 	public synchronized boolean addTypeAlert(String descriptionAlert){
 		String query = "INSERT INTO TYPE_ALERTE"
-				+ "(description_type_alerte) VALUES ('" + descriptionAlert + "')";
+				+ "(description_type_alerte) VALUES ('" + format(descriptionAlert) + "')";
 
 		try {
 			con.connect();
@@ -132,7 +136,7 @@ public class Queries {
 	
 	public synchronized boolean addResponsiblePerson(String name, String firstName, String email){
 		String query = "INSERT INTO PERSONNE_RESPONSABLE"
-				+ "(nom_personne, prenom_personne, email_personne) VALUES ('" + name + "','" + firstName + "','" + email + "')";
+				+ "(nom_personne, prenom_personne, email_personne) VALUES ('" + format(name) + "','" + format(firstName) + "','" + email + "')";
 
 		try {
 			con.connect();
@@ -152,7 +156,7 @@ public class Queries {
 	}
 	
 	public synchronized boolean addResponsiblePersonInZone(String nameZone, String emailPerson){
-		String selectIdZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + nameZone + "'";
+		String selectIdZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + format(nameZone) + "'";
 		String selectIdPerson = "SELECT id_personne FROM PERSONNE_RESPONSABLE WHERE email_personne = '" + emailPerson + "'";
 		String query = "INSERT INTO ETRE_RESPONSABLE_DE"
 				+ "(id_zone, id_personne) VALUES ((" + selectIdZone + "),(" + selectIdPerson + "))";
@@ -175,7 +179,7 @@ public class Queries {
 	}
 	
 	public synchronized boolean deleteAllResponsiblePersonInZone(String nameZone){
-		String selectIdZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + nameZone + "'";
+		String selectIdZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + format(nameZone) + "'";
 		String query = "DELETE FROM ETRE_RESPONSABLE_DE WHERE id_zone = (" + selectIdZone + ")";
 
 		try {
@@ -196,7 +200,7 @@ public class Queries {
 	}
 
 	public synchronized boolean updateResponsiblePerson(String oldEmail, String name, String firstName, String email){
-		String query = "UPDATE PERSONNE_RESPONSABLE SET prenom_personne = '" + firstName + "', nom_personne = '" + name
+		String query = "UPDATE PERSONNE_RESPONSABLE SET prenom_personne = '" + format(firstName) + "', nom_personne = '" + format(name)
 				+ "',email_personne = '" + email + "' WHERE email_personne = '" + oldEmail + "'"; 
 
 		try {
@@ -229,9 +233,9 @@ public class Queries {
 	
 	
 	public synchronized boolean addDataSensorReceive(String nameZone, int donnee, double date, int idSensor){
-		String selectIdZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + nameZone + "'";
+		String selectIdZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + format(nameZone) + "'";
 		String query = "INSERT INTO RELEVE_PERIODIQUE_RECU"
-				+ "(releve, date_releve_recu, id_zone, id_sonde)"
+				+ "(releve, date_releve, id_zone, id_sonde)"
 				+ " VALUES (" + donnee + "," + date + ",(" + selectIdZone + ")," + idSensor + ")";
 
 		try {
@@ -248,7 +252,7 @@ public class Queries {
 	}	
 	
 	public synchronized boolean addDataSensorExpected(String nameZone, int donnee, double date, int idSensor, int marge){
-		String selectIdZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + nameZone + "'";
+		String selectIdZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + format(nameZone) + "'";
 		String query = "INSERT INTO RELEVE_PERIODIQUE_ATTENDU"
 				+ "(releve_attendu, date_releve_attendu, id_zone, id_sonde, marge)"
 				+ " VALUES (" + donnee + "," + date + ",(" + selectIdZone + ")," + idSensor + "," + marge + ")";
@@ -268,7 +272,7 @@ public class Queries {
 	
 	public synchronized boolean addVegetableSpecie(String name, String description){
 		String query = "INSERT INTO ESPECES_VEGETALES"
-				+ "(nom_espece, description_espece) VALUES ('" + name + "','" + description + "')";
+				+ "(nom_espece, description_espece) VALUES ('" + format(name) + "','" + format(description) + "')";
 
 		try {
 			con.connect();
@@ -286,8 +290,8 @@ public class Queries {
 	}
 	
 	public synchronized boolean updateVegetableSpecie(String oldName, String name, String description){
-		String query = "UPDATE ESPECES_VEGETALES SET nom_espece = '" + name + "', description_espece = '" + description + "' "
-				+ "WHERE nom_espece = '" + oldName + "'";
+		String query = "UPDATE ESPECES_VEGETALES SET nom_espece = '" + format(name) + "', description_espece = '" + format(description) + "' "
+				+ "WHERE nom_espece = '" + format(oldName) + "'";
 
 		try {
 			con.connect();
@@ -303,9 +307,9 @@ public class Queries {
 	}
 	
 	public synchronized boolean updateVegetable(String oldName, String name, String description, String nameSpecie){
-		String idSpecie = "SELECT id_espece FROM ESPECES_VEGETALES WHERE nom_espece = '" + nameSpecie + "'";
-		String query = "UPDATE VEGETAUX SET nom_vegetal = '" + name + "', description_vegetal = '" + description + "', id_espece = (" + idSpecie +") "
-				+ "WHERE nom_vegetal = '" + oldName + "'";
+		String idSpecie = "SELECT id_espece FROM ESPECES_VEGETALES WHERE nom_espece = '" + format(nameSpecie) + "'";
+		String query = "UPDATE VEGETAUX SET nom_vegetal = '" + format(name) + "', description_vegetal = '" + format(description) + "', id_espece = (" + idSpecie +") "
+				+ "WHERE nom_vegetal = '" + format(oldName) + "'";
 
 		try {
 			con.connect();
@@ -321,7 +325,7 @@ public class Queries {
 	}
 	
 	public synchronized boolean deleteVegetable(Vegetable vegetable){
-		String query = "DELETE FROM VEGETAUX WHERE nom_vegetal = '" + vegetable.getName() + "'"; 
+		String query = "DELETE FROM VEGETAUX WHERE nom_vegetal = '" + format(vegetable.getName()) + "'"; 
 
 		try {
 			con.connect();
@@ -336,7 +340,7 @@ public class Queries {
 	}
 	
 	public synchronized boolean deleteVegetableSpecie(VegetableSpecie vegetableSpecie){
-		String query = "DELETE FROM ESPECES_VEGETALES WHERE nom_espece = '" + vegetableSpecie.getName() + "'"; 
+		String query = "DELETE FROM ESPECES_VEGETALES WHERE nom_espece = '" + format(vegetableSpecie.getName()) + "'"; 
 
 		try {
 			con.connect();
@@ -352,10 +356,12 @@ public class Queries {
 	
 	
 	public synchronized boolean addVegetable(String name, String description, String specieName){
-		String idSpecie = "SELECT id_espece FROM ESPECES_VEGETALES WHERE nom_espece = '" + specieName + "'";
+		System.out.println(format(name));
+		
+		String idSpecie = "SELECT id_espece FROM ESPECES_VEGETALES WHERE nom_espece = '" + format(specieName) + "'";
 		String query = "INSERT INTO VEGETAUX"
 				+ "(nom_vegetal, description_vegetal, id_espece) VALUES "
-				+ "('" + name + "','" + description + "',(" + idSpecie + "))";
+				+ "('" + format(name) + "','" + format(description) + "',(" + idSpecie + "))";
 
 		try {
 			con.connect();
@@ -372,8 +378,8 @@ public class Queries {
 	}
 	
 	public synchronized boolean addVegetableInZone(String nameVegetal, String nameZone){
-		String selectIdZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + nameZone + "'";
-		String selectIdVegetable = "SELECT id_vegetal FROM VEGETAUX WHERE nom_vegetal = '" + nameVegetal + "'";
+		String selectIdZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + format(nameZone) + "'";
+		String selectIdVegetable = "SELECT id_vegetal FROM VEGETAUX WHERE nom_vegetal = '" + format(nameVegetal) + "'";
 		
 		String query = "INSERT INTO CONTIENT_VEGETAUX"
 				+ "(id_vegetal, id_zone) VALUES "
@@ -394,7 +400,7 @@ public class Queries {
 	}
 	
 	public synchronized boolean removeAllVegetableInZone(String nameZone){
-		String selectIdZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + nameZone + "'";
+		String selectIdZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + format(nameZone) + "'";
 		String query = "DELETE FROM CONTIENT_VEGETAUX WHERE id_zone = (" + selectIdZone + ")";
 
 
@@ -415,7 +421,7 @@ public class Queries {
 	public synchronized boolean addSentMail(String message, int dateEnvoie, int idAlert, int idPerson){
 		String query = "INSERT INTO envoie"
 				+ "(message_envoie, date_envoie, id_alerte, id_personne) VALUES "
-				+ "('" + message + "'," + dateEnvoie + "," + idAlert + "," + idPerson + ")";
+				+ "('" + format(message) + "'," + dateEnvoie + "," + idAlert + "," + idPerson + ")";
 
 		try {
 			con.connect();
@@ -432,10 +438,10 @@ public class Queries {
 	}	
 	
 	public synchronized boolean addTypeAlert(String message, String nameSensor, boolean est_donnee_superieure){
-		String querySensor = "SELECT id_sonde FROM SONDE WHERE nom_sonde = '" + nameSensor + "'";
+		String querySensor = "SELECT id_sonde FROM SONDE WHERE nom_sonde = '" + format(nameSensor) + "'";
 		
 		String query = "INSERT INTO TYPE_ALERTE (description_type_alerte, est_releve_superieur , id_sonde) VALUES ('"
-				+ message + "', " + (est_donnee_superieure? 1 : 0) + ", (" + querySensor + "))";
+				+ format(message) + "', " + (est_donnee_superieure? 1 : 0) + ", (" + querySensor + "))";
 		
 		try{
 			con.connect();
@@ -454,11 +460,11 @@ public class Queries {
 	}
 	
 	public synchronized int getIdTypeAlert(TypeAlert typeAlert){
-		String queryOldSensor = "SELECT id_sonde FROM SONDE WHERE nom_sonde = '" + typeAlert.getNameSensor() + "'";
+		String queryOldSensor = "SELECT id_sonde FROM SONDE WHERE nom_sonde = '" + format(typeAlert.getNameSensor()) + "'";
 		
 		String queryFind = "SELECT id_type_alerte FROM TYPE_ALERTE WHERE id_sonde = (" + queryOldSensor + ") "
 				+ "AND est_releve_superieur = " + (typeAlert.getIsSuperior()? 1 : 0)
-				+ " AND description_type_alerte = '" + typeAlert.getMessage() + "'";
+				+ " AND description_type_alerte = '" + format(typeAlert.getMessage()) + "'";
 		
 		try{
 			con.connect();
@@ -478,15 +484,15 @@ public class Queries {
 	}
 	
 	public synchronized boolean updateAllTypeAlert(TypeAlert old, String message, String nameSensor, boolean isSuperior){
-		String queryOldSensor = "SELECT id_sonde FROM SONDE WHERE nom_sonde = '" + old.getNameSensor() + "'";
-		String queryNewerSensor = "SELECT id_sonde FROM SONDE WHERE nom_sonde = '" + nameSensor + "'";
+		String queryOldSensor = "SELECT id_sonde FROM SONDE WHERE nom_sonde = '" + format(old.getNameSensor()) + "'";
+		String queryNewerSensor = "SELECT id_sonde FROM SONDE WHERE nom_sonde = '" + format(nameSensor) + "'";
 		
 		String queryFind = "SELECT id_type_alerte FROM TYPE_ALERTE WHERE id_sonde = (" + queryOldSensor + ") "
 				+ "AND est_releve_superieur = " + (old.getIsSuperior()? 1 : 0)
-				+ " AND description_type_alerte = '" + old.getMessage() + "'";
+				+ " AND description_type_alerte = '" + format(old.getMessage()) + "'";
 		
 		
-		String query = "UPDATE TYPE_ALERTE SET description_type_alerte = '" + message 
+		String query = "UPDATE TYPE_ALERTE SET description_type_alerte = '" + format(message) 
 				+ "' , est_releve_superieur = " + (isSuperior? 1 : 0) + ", id_sonde = (" + queryNewerSensor + ") "
 				+ "WHERE id_type_alerte = ("+ queryFind + ")";
 		
@@ -505,10 +511,10 @@ public class Queries {
 	}
 	
 	public synchronized boolean deletedTypeAlert(TypeAlert typeAlert){
-		String querySensor = "SELECT id_sonde FROM SONDE WHERE nom_sonde = '" + typeAlert.getNameSensor() + "'";
+		String querySensor = "SELECT id_sonde FROM SONDE WHERE nom_sonde = '" + format(typeAlert.getNameSensor()) + "'";
 		
 		String query = "DELETE FROM TYPE_ALERTE WHERE est_releve_superieur = " + (typeAlert.getIsSuperior()? 1:0)
-				+ " AND description_type_alerte = '" + typeAlert.getMessage()
+				+ " AND description_type_alerte = '" + format(typeAlert.getMessage())
 				+ "' AND id_sonde = (" + querySensor + ")"; 
 	
 		try{
@@ -526,7 +532,7 @@ public class Queries {
 	}
 	
 	public synchronized boolean deletedTypeAlertInZone(String nameZone, TypeAlert typeAlert){
-		String queryZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + nameZone + "'";
+		String queryZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + format(nameZone) + "'";
 		
 		String query = "DELETE FROM TYPE_ALERTE_CORRESPONDRE_ZONE WHERE id_zone = (" + queryZone
 				+ ") AND id_type_alerte = " + typeAlert.getIdTypeAlert();
@@ -548,7 +554,7 @@ public class Queries {
 	
 	public synchronized boolean addTypeAlertInZone(String nameZone, TypeAlert typeAlert){
 
-		String queryIdZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + nameZone + "'";
+		String queryIdZone = "SELECT id_zone FROM ZONE WHERE nom_zone = '" + format(nameZone) + "'";
 		String query = "INSERT INTO TYPE_ALERTE_CORRESPONDRE_ZONE (id_zone, id_type_alerte) VALUES (("
 				+ queryIdZone + "), " + typeAlert.getIdTypeAlert() + ")";
 		

@@ -2,13 +2,11 @@ package controller.javafx;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.naming.spi.InitialContextFactory;
-
 import application.MainFrame;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -21,25 +19,21 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.input.ScrollEvent;
 import model.DataFromSensor;
-import model.Zone;
 
 public class ZoneSensorAnalyseController implements Initializable{
 	
 	@FXML
-	LineChart<Integer, Integer> lineChartValues;
+	LineChart<Long, Integer> lineChartValues;
 	
 	@FXML
 	NumberAxis xAxis;
 	
 	@FXML
 	NumberAxis yAxis;
-	
-	@FXML
-	Slider sliderLineChart;
-	
+
 	@FXML
 	TextField hourBegin;
 	
@@ -67,7 +61,11 @@ public class ZoneSensorAnalyseController implements Initializable{
 	@FXML
 	DatePicker datePickerLast;
 	
-	private TreeMap<Integer, DataFromSensor> listData;
+	private TreeMap<Long, DataFromSensor> listDataExpected;
+	private TreeMap<Long, DataFromSensor> listDataReceive;
+	
+	Entry<Long, DataFromSensor> precEntryLower;
+	Entry<Long, DataFromSensor> precEntryUpper;
 	
 	private Pattern pattern;
 	private Matcher matcher;
@@ -214,41 +212,141 @@ public class ZoneSensorAnalyseController implements Initializable{
 						validateButton.setStyle("-fx-text-fill: red");
 					}
 					else{
-						
+						eventAxis(epochBegin, epochLast, false);
 					}
 				}
 			}
 		});
 	}
 	
-	public synchronized void eventAxis(){
+	
+	public synchronized void eventAxis(long lowerBound, long upperBound, boolean zoomOn){
 		lineChartValues.getXAxis().setLabel("Temps");
 		lineChartValues.getYAxis().setLabel("Valeur souhaité");
 		
-		XYChart.Series<Integer, Integer> valuesSeries = new XYChart.Series<>();
-		XYChart.Series<Integer, Integer> marginPlusSeries = new XYChart.Series<>();
-		XYChart.Series<Integer, Integer> marginMinusSeries = new XYChart.Series<>();
+		XYChart.Series<Long, Integer> valuesSeries = new XYChart.Series<>();
+		XYChart.Series<Long, Integer> marginPlusSeries = new XYChart.Series<>();
+		XYChart.Series<Long, Integer> marginMinusSeries = new XYChart.Series<>();
+		XYChart.Series<Long, Integer> valuesReceive = new XYChart.Series<>();
 		
 		valuesSeries.setName("Valeurs");
 		marginPlusSeries.setName("Marge superieur");
 		marginMinusSeries.setName("Marge inferieur");
-
-		xAxis.setForceZeroInRange(false);
-		int cpt = 0;
+		valuesReceive.setName("Valeurs recu");
 		
-		for(Entry<Integer, DataFromSensor> entry : listData.entrySet()){
-			if(cpt == 0) xAxis.setLowerBound(entry.getKey() / 3600);
-			if(cpt == listData.entrySet().size() - 1) xAxis.setUpperBound(entry.getKey() / 3600);
-			
-			valuesSeries.getData().add(new XYChart.Data<Integer, Integer>(entry.getKey() / 3600, entry.getValue().getDonnee()));
-			marginPlusSeries.getData().add(new XYChart.Data<Integer, Integer>(entry.getKey() / 3600, entry.getValue().getDonnee() + entry.getValue().getMarge()));
-			marginMinusSeries.getData().add(new XYChart.Data<Integer, Integer>(entry.getKey() / 3600, entry.getValue().getDonnee() - entry.getValue().getMarge()));
+		xAxis.setForceZeroInRange(false);
+		xAxis.setLowerBound((double)lowerBound / 3600);
+		xAxis.setUpperBound((double)upperBound / 3600);
+
+		Entry<Long, DataFromSensor> entryLower = listDataReceive.lowerEntry(lowerBound);
+		Entry<Long, DataFromSensor> entryUpper = listDataReceive.higherEntry(upperBound);
+		Entry<Long, DataFromSensor> entryExpectedLower = listDataExpected.lowerEntry(lowerBound);
+		Entry<Long, DataFromSensor> entryExpectedUpper = listDataExpected.higherEntry(upperBound);
+		
+		Set<Entry<Long, DataFromSensor>> set = listDataExpected.subMap(lowerBound, upperBound).entrySet();
+		Set<Entry<Long, DataFromSensor>> setReceive = listDataReceive.subMap(lowerBound, upperBound).entrySet();
+
+		
+		if(entryLower != null){
+			precEntryLower = entryLower;
+			valuesReceive.getData().add(new XYChart.Data<Long, Integer>((lowerBound / 3600), entryLower.getValue().getDonnee()));	
+		}
+		if(entryUpper != null){
+			precEntryUpper = entryUpper;
+			valuesReceive.getData().add(new XYChart.Data<Long, Integer>((upperBound / 3600), entryUpper.getValue().getDonnee()));
+		}
+		if(entryExpectedLower != null){
+			valuesSeries.getData().add(new XYChart.Data<Long, Integer>((lowerBound / 3600), entryExpectedLower.getValue().getDonnee()));
+			marginPlusSeries.getData().add(new XYChart.Data<Long, Integer>((lowerBound / 3600), entryExpectedLower.getValue().getDonnee() + entryExpectedLower.getValue().getMarge()));
+			marginMinusSeries.getData().add(new XYChart.Data<Long, Integer>((lowerBound / 3600), entryExpectedLower.getValue().getDonnee() - entryExpectedLower.getValue().getMarge()));		
+		}
+		if(entryExpectedUpper != null){
+			valuesSeries.getData().add(new XYChart.Data<Long, Integer>((upperBound / 3600), entryExpectedUpper.getValue().getDonnee()));
+			marginPlusSeries.getData().add(new XYChart.Data<Long, Integer>((upperBound / 3600), entryExpectedUpper.getValue().getDonnee() + entryExpectedUpper.getValue().getMarge()));
+			marginMinusSeries.getData().add(new XYChart.Data<Long, Integer>((upperBound / 3600), entryExpectedUpper.getValue().getDonnee() - entryExpectedUpper.getValue().getMarge()));	
+		}			
+		
+	
+		
+		for(Entry<Long, DataFromSensor> entry : set){
+			valuesSeries.getData().add(new XYChart.Data<Long, Integer>(entry.getKey() / 3600, entry.getValue().getDonnee()));
+			marginPlusSeries.getData().add(new XYChart.Data<Long, Integer>(entry.getKey() / 3600, entry.getValue().getDonnee() + entry.getValue().getMarge()));
+			marginMinusSeries.getData().add(new XYChart.Data<Long, Integer>(entry.getKey() / 3600, entry.getValue().getDonnee() - entry.getValue().getMarge()));
+		}
+		
+		for(Entry<Long, DataFromSensor> entry : listDataReceive.subMap(lowerBound, upperBound).entrySet()){
+			valuesReceive.getData().add(new XYChart.Data<Long, Integer>(entry.getKey() / 3600, entry.getValue().getDonnee()));
 		}
 		
 		lineChartValues.getData().clear();
 		lineChartValues.getData().add(valuesSeries);	
 		lineChartValues.getData().add(marginPlusSeries);	
-		lineChartValues.getData().add(marginMinusSeries);	
+		lineChartValues.getData().add(marginMinusSeries);
+		lineChartValues.getData().add(valuesReceive);
+	}
+	
+	public void eventSliderLineChart(){	
+		lineChartValues.setAnimated(false);
+		lineChartValues.setOnScroll(new EventHandler<ScrollEvent>() {
+
+			@Override
+			public void handle(ScrollEvent event) {
+				long valuesMouseX = (long) (event.getX() - 62);
+				
+				long lower = (long) xAxis.getLowerBound() * 3600;
+				long upper = (long) xAxis.getUpperBound() * 3600;
+				long with = (long) (lineChartValues.getWidth() - 74);
+				long padding = ((upper - lower) / with);
+				long valueMouse = (long) ((lower + (padding * valuesMouseX)));
+				
+				if(event.getDeltaY() < 0){
+					
+					System.out.println();
+					System.out.println(getZoom());
+					System.out.println((lower - getZoom())/3600 + " " + (upper + getZoom())/3600);
+					System.out.println();
+					
+					eventAxis(lower - getZoom(), upper + getZoom(), false);			
+				}
+				else{
+					System.out.println();
+					System.out.println(getZoom());
+					System.out.println((valueMouse - getZoom())/3600 + " " + (valueMouse + getZoom())/3600);
+					System.out.println();
+					
+					eventAxis(valueMouse - getZoom(), valueMouse + getZoom(), true);	
+				}
+				
+			}
+		});
+	}
+	
+	public long getZoom(){
+		long secondsMin = 60;
+		long secondsHour = secondsMin * 60;
+		long secondsDay = secondsHour * 24;
+		long secondsMonth = secondsDay * 30;
+		long secondsYear = secondsMonth * 12;
+		
+		long lower = (long) xAxis.getLowerBound() * 3600;
+		long upper = (long) xAxis.getUpperBound() * 3600;
+
+		long distance =  upper - lower;
+		if(distance/secondsYear > 1){
+			return secondsYear; 
+		}
+		else if(distance/secondsMonth > 1){
+			return secondsMonth;
+		}
+		else if(distance/secondsDay > 1){
+			return secondsDay;
+		}
+		else if(distance/secondsHour > 1){
+			return secondsHour;
+		}
+		else{
+			return secondsMin;
+		}
 	}
 
 	
@@ -257,7 +355,7 @@ public class ZoneSensorAnalyseController implements Initializable{
 		eventTimeBegin();
 		eventTimeEnd();
 		eventButton();
-		
+		eventSliderLineChart();
 	}
 	
 	public void setMainApp(MainFrame mainApp){
@@ -268,10 +366,12 @@ public class ZoneSensorAnalyseController implements Initializable{
 		this.indexSensor = indexSensor;
 	}
 	
-	public void setListDataSensor(TreeMap<Integer, DataFromSensor> list){
-		this.listData = list;
-		
-		eventAxis();
+	public void setListDataSensorExpected(TreeMap<Long, DataFromSensor> list){
+		this.listDataExpected = list;
+	}
+	
+	public void setListDataSensorReceive(TreeMap<Long, DataFromSensor> list){
+		this.listDataReceive = list;
 	}
 
 }

@@ -247,28 +247,24 @@ public class ZoneSensorAnalyseController implements Initializable{
 		Set<Entry<Long, DataFromSensor>> setReceive = listDataReceive.subMap(lowerBound, upperBound).entrySet();
 
 		
-		if(set.size() > 0){
-			if(entryLower != null){
-				precEntryLower = entryLower;
-				valuesReceive.getData().add(new XYChart.Data<Long, Integer>((lowerBound / 3600), entryLower.getValue().getDonnee()));	
-			}
-			if(entryUpper != null){
-				precEntryUpper = entryUpper;
-				valuesReceive.getData().add(new XYChart.Data<Long, Integer>((upperBound / 3600), entryUpper.getValue().getDonnee()));
-			}
-		}	
-		if(set.size() > 0){
-			if(entryExpectedLower != null){
-				valuesSeries.getData().add(new XYChart.Data<Long, Integer>((lowerBound / 3600), entryExpectedLower.getValue().getDonnee()));
-				marginPlusSeries.getData().add(new XYChart.Data<Long, Integer>((lowerBound / 3600), entryExpectedLower.getValue().getDonnee() + entryExpectedLower.getValue().getMarge()));
-				marginMinusSeries.getData().add(new XYChart.Data<Long, Integer>((lowerBound / 3600), entryExpectedLower.getValue().getDonnee() - entryExpectedLower.getValue().getMarge()));		
-			}
-			if(entryExpectedUpper != null){
-				valuesSeries.getData().add(new XYChart.Data<Long, Integer>((upperBound / 3600), entryExpectedUpper.getValue().getDonnee()));
-				marginPlusSeries.getData().add(new XYChart.Data<Long, Integer>((upperBound / 3600), entryExpectedUpper.getValue().getDonnee() + entryExpectedLower.getValue().getMarge()));
-				marginMinusSeries.getData().add(new XYChart.Data<Long, Integer>((upperBound / 3600), entryExpectedUpper.getValue().getDonnee() - entryExpectedLower.getValue().getMarge()));	
-			}			
+		if(entryLower != null){
+			precEntryLower = entryLower;
+			valuesReceive.getData().add(new XYChart.Data<Long, Integer>((lowerBound / 3600), entryLower.getValue().getDonnee()));	
 		}
+		if(entryUpper != null){
+			precEntryUpper = entryUpper;
+			valuesReceive.getData().add(new XYChart.Data<Long, Integer>((upperBound / 3600), entryUpper.getValue().getDonnee()));
+		}
+		if(entryExpectedLower != null){
+			valuesSeries.getData().add(new XYChart.Data<Long, Integer>((lowerBound / 3600), entryExpectedLower.getValue().getDonnee()));
+			marginPlusSeries.getData().add(new XYChart.Data<Long, Integer>((lowerBound / 3600), entryExpectedLower.getValue().getDonnee() + entryExpectedLower.getValue().getMarge()));
+			marginMinusSeries.getData().add(new XYChart.Data<Long, Integer>((lowerBound / 3600), entryExpectedLower.getValue().getDonnee() - entryExpectedLower.getValue().getMarge()));		
+		}
+		if(entryExpectedUpper != null){
+			valuesSeries.getData().add(new XYChart.Data<Long, Integer>((upperBound / 3600), entryExpectedUpper.getValue().getDonnee()));
+			marginPlusSeries.getData().add(new XYChart.Data<Long, Integer>((upperBound / 3600), entryExpectedUpper.getValue().getDonnee() + entryExpectedUpper.getValue().getMarge()));
+			marginMinusSeries.getData().add(new XYChart.Data<Long, Integer>((upperBound / 3600), entryExpectedUpper.getValue().getDonnee() - entryExpectedUpper.getValue().getMarge()));	
+		}			
 		
 	
 		

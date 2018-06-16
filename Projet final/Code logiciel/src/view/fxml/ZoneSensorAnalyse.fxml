@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1260.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.javafx.ZoneSensorAnalyseController">
+   <children>
+      <DatePicker fx:id="datePickerBegin" layoutX="142.0" layoutY="14.0" promptText="Jour de début" />
+      <DatePicker fx:id="datePickerLast" layoutX="142.0" layoutY="54.0" promptText="Jour de fin" />
+      <Label layoutX="364.0" layoutY="19.0" prefHeight="16.0" prefWidth="117.0" text="Heure de début :" underline="true" />
+      <TextField fx:id="hourBegin" alignment="CENTER" layoutX="481.0" layoutY="14.0" prefHeight="26.0" prefWidth="33.0" promptText="hh" />
+      <Label layoutX="364.0" layoutY="59.0" prefHeight="16.0" prefWidth="117.0" text="Heure de fin :" underline="true" />
+      <TextField fx:id="minBegin" alignment="CENTER" layoutX="530.0" layoutY="14.0" prefHeight="26.0" prefWidth="42.0" promptText="mm" />
+      <TextField fx:id="secondBegin" alignment="CENTER" layoutX="591.0" layoutY="14.0" prefHeight="26.0" prefWidth="33.0" promptText="ss" />
+      <Label layoutX="518.0" layoutY="19.0" text=":" />
+      <Label layoutX="579.0" layoutY="19.0" text=":" />
+      <TextField fx:id="hourLast" alignment="CENTER" layoutX="480.0" layoutY="54.0" prefHeight="26.0" prefWidth="33.0" promptText="hh" />
+      <TextField fx:id="minLast" alignment="CENTER" layoutX="529.0" layoutY="54.0" prefHeight="26.0" prefWidth="42.0" promptText="mm" />
+      <TextField fx:id="secondLast" alignment="CENTER" layoutX="590.0" layoutY="54.0" prefHeight="26.0" prefWidth="33.0" promptText="ss" />
+      <Label layoutX="517.0" layoutY="59.0" text=":" />
+      <Label layoutX="578.0" layoutY="59.0" text=":" />
+      <Label layoutX="25.0" layoutY="19.0" prefHeight="16.0" prefWidth="117.0" text="Jour de début :" underline="true" />
+      <Label layoutX="25.0" layoutY="59.0" prefHeight="16.0" prefWidth="99.0" text="Jour de fin :" underline="true" />
+      <Button fx:id="validateButton" layoutX="666.0" layoutY="54.0" mnemonicParsing="false" text="Valider" />
+      <LineChart fx:id="lineChartValues" layoutX="7.0" layoutY="102.0" prefHeight="408.0" prefWidth="1217.0">
+        <xAxis>
+          <NumberAxis side="BOTTOM" fx:id="xAxis" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis fx:id="yAxis" side="LEFT" />
+        </yAxis>
+      </LineChart>
+<!--       <Slider layoutX="42.0" layoutY="538.0" majorTickUnit="5.0" minorTickCount="1" prefHeight="38.0" prefWidth="1172.0" showTickLabels="true" showTickMarks="true" />
+ -->   </children>
+</AnchorPane>

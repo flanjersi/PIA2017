@@ -17,7 +17,7 @@
       <Label layoutX="14.0" layoutY="122.0" prefHeight="16.0" prefWidth="99.0" text="Jour de fin :" underline="true" />
       <DatePicker fx:id="datePickerLast" layoutX="131.0" layoutY="117.0" promptText="Jour de fin" />
       <Label layoutX="361.0" layoutY="122.0" prefHeight="16.0" prefWidth="117.0" text="Heure de fin :" underline="true" />
-      <Label layoutX="14.0" layoutY="164.0" prefHeight="16.0" prefWidth="117.0" text="Valeur attendu :" underline="true" />
+      <Label layoutX="14.0" layoutY="164.0" prefHeight="16.0" prefWidth="117.0" text="Valeur attendue :" underline="true" />
       <Label layoutX="361.0" layoutY="164.0" prefHeight="16.0" prefWidth="117.0" text="Marge de valeur:" underline="true" />
       <TextField fx:id="hourBegin" alignment="CENTER" layoutX="478.0" layoutY="77.0" prefHeight="26.0" prefWidth="33.0" promptText="hh" />
       <TextField fx:id="minBegin" alignment="CENTER" layoutX="527.0" layoutY="77.0" prefHeight="26.0" prefWidth="42.0" promptText="mm" />

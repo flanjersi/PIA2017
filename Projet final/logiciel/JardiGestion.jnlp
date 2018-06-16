@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="JardiGestion.jnlp">
+  <information>
+    <title>JardiGestion</title>
+    <vendor></vendor>
+    <description>JardiGestion</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="JardiGestion.jar" size="1347766" download="eager" />
+    <jar href="libs/sqlite-jdbc-3.16.1.jar" size="6161579" download="eager" />
+  </resources>
+  <jfx:javafx-desc  width="0" height="0" main-class="application.MainFrame"  name="JardiGestion" />
+  <update check="background"/>
+</jnlp>
